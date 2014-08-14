@@ -28,6 +28,8 @@ namespace HutongGames.PlayMaker.Actions
         public bool everyFrame;
 
 		GameObject goLastFrame;
+		string fsmNameLastFrame;
+
 		PlayMakerFSM fsm;
 
 		public override void Reset()
@@ -62,14 +64,15 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-			if (go != goLastFrame)
+			// FIX: must check as well that the fsm name is different.
+			if (go != goLastFrame || fsmName.Value != fsmNameLastFrame)
 			{
 				goLastFrame = go;
-
-				// only get the fsm component if go has changed
-
+				fsmNameLastFrame = fsmName.Value;
+				// only get the fsm component if go or fsm name has changed
+				
 				fsm = ActionHelpers.GetGameObjectFsm(go, fsmName.Value);
-			}
+			}	
 
 			if (fsm == null)
 			{

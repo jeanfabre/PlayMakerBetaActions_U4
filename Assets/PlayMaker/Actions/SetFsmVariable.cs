@@ -19,12 +19,15 @@ namespace HutongGames.PlayMaker.Actions
         public FsmString variableName;
 
         [RequiredField]
+        [HideTypeFilter]
         public FsmVar setValue;
 
         [Tooltip("Repeat every frame.")]
         public bool everyFrame;
 
         private GameObject cachedGO;
+		string fsmNameLastFrame;
+
         private PlayMakerFSM sourceFsm;
         private INamedVariable sourceVariable;
         private NamedVariable targetVariable;
@@ -61,12 +64,20 @@ namespace HutongGames.PlayMaker.Actions
                 return;
             }
 
-            if (go != cachedGO)
-            {
+			// FIX: must check as well that the fsm name is different.
+			if (go != cachedGO || fsmName.Value != fsmNameLastFrame)
+			{
+
+				// only get the fsm component if go or fsm name has changed
+
                 sourceFsm = ActionHelpers.GetGameObjectFsm(go, fsmName.Value);
                 sourceVariable = sourceFsm.FsmVariables.GetVariable(setValue.variableName);
                 targetVariable = Fsm.Variables.GetVariable(setValue.variableName);
-                setValue.Type = targetVariable.VariableType;
+
+			    if (targetVariable != null)
+			    {
+			        setValue.Type = targetVariable.VariableType;
+			    }
 
                 if (!string.IsNullOrEmpty(setValue.variableName) && sourceVariable == null)
                 {
@@ -74,6 +85,7 @@ namespace HutongGames.PlayMaker.Actions
                 }
 
                 cachedGO = go;
+				fsmNameLastFrame = fsmName.Value;
             }
         }
 

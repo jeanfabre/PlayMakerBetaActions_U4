@@ -14,7 +14,7 @@ namespace HutongGames.PlayMaker.Actions
 	[Tooltip("Performs a sphereCast hit")]
 	public class SphereCastAll : FsmStateAction
 	{
-					[ActionSection("Spherecast Settings")] 
+					[ActionSection("SphereCast Settings")] 
 		
 		[Tooltip("The center of the sphere at the start of the sweep. \nOr use From Position parameter.")]
 		public FsmOwnerDefault fromGameObject;
@@ -60,7 +60,7 @@ namespace HutongGames.PlayMaker.Actions
 
 		[Tooltip("Store the game object hit in a variable.")]
 		[UIHint(UIHint.Variable)]
-		public FsmArray storeHitObject;
+		public FsmArray storeHitObjects;
 			
 		[Tooltip("Event to send when there is a hit.")]
 		public FsmEvent hitEvent;
@@ -74,6 +74,12 @@ namespace HutongGames.PlayMaker.Actions
 		private bool didHit;
 		private int[] mask;
 
+
+		private Vector3 _start;
+		private Vector3 _end;
+		public Vector3 Start {get{return _start;}}
+		public Vector3 End {get{return _end;}}
+
 		public override void Reset()
 		{
 			
@@ -83,7 +89,7 @@ namespace HutongGames.PlayMaker.Actions
 			radius = 1f;
 			space = Space.Self;
 			distance = 100;
-			storeHitObject = null;
+			storeHitObjects = null;
 			everyFrame = false;
 			
 			
@@ -117,7 +123,45 @@ namespace HutongGames.PlayMaker.Actions
 				Finish();
 			}
 		}
-		
+
+		public bool UpdateSphereCastAll()
+		{
+			if (distance.Value == 0)
+			{
+				return false;
+			}
+
+			if (fromGameObject==null || Fsm==null)
+			{
+				return false;
+			}
+			var go = Fsm.GetOwnerDefaultTarget(fromGameObject);
+			
+			var originPos = go != null ? go.transform.position : fromPosition.Value;
+			
+			var rayLength = Mathf.Infinity;
+			if (distance.Value > 0 )
+			{
+				rayLength = distance.Value;
+				
+			}
+			
+			var dirVector = direction.Value;
+			if (go != null && space == Space.Self)
+			{
+				dirVector = go.transform.TransformDirection(direction.Value);
+				
+			}
+			
+			var debugRayLength = Mathf.Min(rayLength, 1000);
+			var endPos = (originPos + dirVector.normalized * debugRayLength);
+			
+			_start = originPos;
+			_end = endPos;
+			
+			return true;
+		}
+
 		public void DoSphereCast()
 		{
 			if (distance.Value == 0)
@@ -143,31 +187,6 @@ namespace HutongGames.PlayMaker.Actions
 
 			}
 
-			// I think this debug is more useful that the previous
-			/* TODO
-			 * set the debug length and position to reflect the end of the actual ray
-			 * instead of passing through objects.
-			 * 
-			 */
-			if (debug.Value)
-			{
-				var debugRayLength = Mathf.Min(rayLength, 1000);
-				var endPos = (originPos + dirVector * debugRayLength);
-
-				// debug line start to finish
-				Debug.DrawLine(originPos, endPos, debugColor.Value);
-
-				//debug lines indicating spherecast radius
-				Debug.DrawLine
-					(endPos + ((go.transform.rotation * Vector3.up) * radius.Value),
-					 endPos + ((go.transform.rotation * Vector3.down) * radius.Value),
-					 debugColor.Value);
-
-				Debug.DrawLine
-					(endPos + ((go.transform.rotation * Vector3.left) * radius.Value),
-					 endPos + ((go.transform.rotation * Vector3.right) * radius.Value),
-					 debugColor.Value);
-			}
 
 			// do the actual raycast
 			RaycastHit[] hitInfo = Physics.SphereCastAll (originPos, radius.Value, dirVector, rayLength);
@@ -188,19 +207,29 @@ namespace HutongGames.PlayMaker.Actions
 
 				// since we don't go into the if (didHit) below, we should
 				// reset the array size to clean up.
-				storeHitObject.Resize (0);
+				storeHitObjects.Resize (0);
 				Fsm.Event(noHitEvent);
 			}
+
+
+			if (didHit && debug.Value)
+			{
+				foreach(RaycastHit _hit in hitInfo)
+				{
+					Debug.DrawLine(_hit.point,_hit.normal);
+				}
+			}
+
 
 			if (didHit)
 			{
 				// resize the user's array to match the ray hit number
-				storeHitObject.Resize (hitInfo.Length);
+				storeHitObjects.Resize (hitInfo.Length);
 
 				// iterate through the hits, clone to the FsmArray
 				for (int i = 0; i < hitInfo.Length; i++)
 				{
-					storeHitObject.Set(i, hitInfo[i].collider.gameObject);
+					storeHitObjects.Set(i, hitInfo[i].collider.gameObject);
 				}
 
 				// send the hit event (if there is one)

@@ -34,7 +34,9 @@ namespace HutongGames.PlayMaker.Actions
 		// Cache for performance
 		private GameObject cachedObect;
 		private Transform myTransform;
+		private GameObject cachedTargetObject;
 		private Transform targetTransform;
+
 
 		public override void Reset()
 		{
@@ -63,6 +65,12 @@ namespace HutongGames.PlayMaker.Actions
 			{
 				cachedObect = go;
 				myTransform = go.transform;
+			
+			}
+
+			if (cachedTargetObject != targetObject.Value)
+			{
+				cachedTargetObject = targetObject.Value;
 				targetTransform = targetObject.Value.transform;
 			}
 
