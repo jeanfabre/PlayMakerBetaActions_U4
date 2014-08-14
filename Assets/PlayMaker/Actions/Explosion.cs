@@ -73,9 +73,10 @@ namespace HutongGames.PlayMaker.Actions
 			
 			foreach (var hit in colliders)
 			{
-				if (hit.rigidbody != null && ShouldApplyForce(hit.gameObject))
+			    var rigidBody = hit.gameObject.GetComponent<Rigidbody>();
+                if (rigidBody != null && ShouldApplyForce(hit.gameObject))
 				{
-					hit.rigidbody.AddExplosionForce(force.Value, center.Value, radius.Value, upwardsModifier.Value, forceMode);
+                    rigidBody.AddExplosionForce(force.Value, center.Value, radius.Value, upwardsModifier.Value, forceMode);
 				}
 			}
 		}

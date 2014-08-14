@@ -1,6 +1,7 @@
 // (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
 using UnityEngine;
+using HutongGames.PlayMaker;
 
 namespace HutongGames.PlayMaker.Actions
 {
@@ -58,7 +59,7 @@ namespace HutongGames.PlayMaker.Actions
 
 		void DoHasComponent(GameObject go)
 		{
-			aComponent = go.GetComponent(component.Value);
+			aComponent = go.GetComponent(ReflectionUtils.GetGlobalType(component.Value));
 
 			Fsm.Event(aComponent != null ? trueEvent : falseEvent);
 		}

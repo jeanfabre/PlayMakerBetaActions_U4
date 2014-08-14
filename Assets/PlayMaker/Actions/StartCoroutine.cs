@@ -64,7 +64,7 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-			component = go.GetComponent(behaviour.Value) as MonoBehaviour;
+			component = go.GetComponent(ReflectionUtils.GetGlobalType(behaviour.Value)) as MonoBehaviour;
 
 			if (component == null)
 			{

@@ -9,13 +9,20 @@ namespace HutongGames.PlayMaker.Actions
 	public class GetDistance : FsmStateAction
 	{
 		[RequiredField]
+        [Tooltip("Measure distance from this GameObject.")]
 		public FsmOwnerDefault gameObject;
-		[RequiredField]
-		public FsmGameObject target;
-		[RequiredField]
+		
+        [RequiredField]
+		[Tooltip("Target GameObject.")]
+        public FsmGameObject target;
+		
+        [RequiredField]
 		[UIHint(UIHint.Variable)]
+        [Tooltip("Store the distance in a float variable.")]
 		public FsmFloat storeResult;
-		public bool everyFrame;
+		
+        [Tooltip("Repeat every frame.")]
+        public bool everyFrame;
 		
 		public override void Reset()
 		{
@@ -28,9 +35,11 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter()
 		{
 			DoGetDistance();
-			
-			if (!everyFrame)
-				Finish();
+
+		    if (!everyFrame)
+		    {
+		        Finish();
+		    }
 		}
 		public override void OnUpdate()
 		{
@@ -39,10 +48,11 @@ namespace HutongGames.PlayMaker.Actions
 		
 		void DoGetDistance()
 		{
-			GameObject go = gameObject.OwnerOption == OwnerDefaultOption.UseOwner ? Owner : gameObject.GameObject.Value;
-			
-			if (go == null || target.Value == null || storeResult == null)
-				return;
+			var go = Fsm.GetOwnerDefaultTarget(gameObject);
+		    if (go == null || target.Value == null || storeResult == null)
+		    {
+		        return;
+		    }
 					
 			storeResult.Value = Vector3.Distance(go.transform.position, target.Value.transform.position);
 		}

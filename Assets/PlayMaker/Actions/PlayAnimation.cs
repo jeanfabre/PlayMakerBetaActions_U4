@@ -7,7 +7,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Animation)]
 	[Tooltip("Plays an Animation on a Game Object. You can add named animation clips to the object in the Unity editor, or with the Add Animation Clip action.")]
-	public class PlayAnimation : FsmStateAction
+	public class PlayAnimation : ComponentAction<Animation>
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animation))]
@@ -56,7 +56,7 @@ namespace HutongGames.PlayMaker.Actions
 		void DoPlayAnimation()
 		{
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go == null || string.IsNullOrEmpty(animName.Value))
+			if (!UpdateCache(go))
 			{
 				Finish();
 				return;
@@ -69,14 +69,7 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-			if (go.animation == null)
-			{
-				LogWarning("Missing animation component!");
-				Finish();
-				return;
-			}
-
-			anim = go.animation[animName.Value];
+			anim = animation[animName.Value];
 
 			if (anim == null)
 			{
@@ -88,11 +81,11 @@ namespace HutongGames.PlayMaker.Actions
 			var time = blendTime.Value;
 			if (time < 0.001f)
 			{
-				go.animation.Play(animName.Value, playMode);
+				animation.Play(animName.Value, playMode);
 			}
 			else
 			{
-				go.animation.CrossFade(animName.Value, time, playMode);
+				animation.CrossFade(animName.Value, time, playMode);
 			}
 
 			prevAnimtTime = anim.time;
@@ -128,10 +121,9 @@ namespace HutongGames.PlayMaker.Actions
 
 		void StopAnimation()
 		{
-			var go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go != null && go.animation != null)
+			if (animation != null)
 			{
-				go.animation.Stop(animName.Value);
+				animation.Stop(animName.Value);
 			}
 		}
 	}

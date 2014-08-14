@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Effects)]
 	[Tooltip("Randomly flickers a Game Object on/off.")]
-	public class Flicker : FsmStateAction
+	public class Flicker : ComponentAction<Renderer>
 	{
 		[RequiredField]
         [Tooltip("The GameObject to flicker.")]
@@ -73,9 +73,9 @@ namespace HutongGames.PlayMaker.Actions
 				
 				if (rendererOnly)
 				{
-					if (go.renderer != null)
+					if (UpdateCache(go))
 					{
-						go.renderer.enabled = on;
+						renderer.enabled = on;
 					}
 				}
 				else

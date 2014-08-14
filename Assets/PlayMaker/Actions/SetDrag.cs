@@ -8,7 +8,7 @@ namespace HutongGames.PlayMaker.Actions
 	[ActionCategory(ActionCategory.Physics)]
     [HelpUrl("http://hutonggames.com/playmakerforum/index.php?topic=4734.0")]
 	[Tooltip("Sets the Drag of a Game Object's Rigid Body.")]
-	public class SetDrag : FsmStateAction
+	public class SetDrag : ComponentAction<Rigidbody>
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Rigidbody))]
@@ -44,11 +44,11 @@ namespace HutongGames.PlayMaker.Actions
 
 		void DoSetDrag()
 		{
-			GameObject go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go == null) return;
-			if (go.rigidbody == null) return;
-			
-			go.rigidbody.drag = drag.Value;
+			var go = Fsm.GetOwnerDefaultTarget(gameObject);
+		    if (UpdateCache(go))
+		    {
+                rigidbody.drag = drag.Value;
+		    }
 		}
 	}
 }

@@ -1,6 +1,6 @@
 // (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
-#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_FLASH || UNITY_PS3 || UNITY_BLACKBERRY || UNITY_WP8)
+#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_FLASH || UNITY_PS3 || UNITY_BLACKBERRY || UNITY_WP8 || UNITY_PSM || UNITY_WEBGL)
 
 using UnityEngine;
 
@@ -32,9 +32,9 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			var movie = movieTexture.Value as MovieTexture;
 
-			if (movie != null && gameObject.Value != null) 
+			if (movie != null && gameObject.Value != null)
 			{
-				var audio = gameObject.Value.audio;
+			    var audio = gameObject.Value.GetComponent<AudioSource>();
 				if (audio != null)
 				{
 					audio.clip = movie.audioClip;

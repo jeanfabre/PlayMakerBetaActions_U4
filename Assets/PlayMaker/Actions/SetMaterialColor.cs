@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Material)]
 	[Tooltip("Sets a named color value in a game object's material.")]
-	public class SetMaterialColor : FsmStateAction
+	public class SetMaterialColor : ComponentAction<Renderer>
 	{
 		[Tooltip("The GameObject that the material is applied to.")]
 		[CheckForComponent(typeof(Renderer))]
@@ -69,15 +69,12 @@ namespace HutongGames.PlayMaker.Actions
 			}
 			
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go == null) return;
-
-			if (go.renderer == null)
-			{
-				LogError("Missing Renderer!");
-				return;
-			}
+		    if (!UpdateCache(go))
+		    {
+		        return;
+		    }
 			
-			if (go.renderer.material == null)
+			if (renderer.material == null)
 			{
 				LogError("Missing Material!");
 				return;
@@ -85,13 +82,13 @@ namespace HutongGames.PlayMaker.Actions
 			
 			if (materialIndex.Value == 0)
 			{
-				go.renderer.material.SetColor(colorName, color.Value);
+				renderer.material.SetColor(colorName, color.Value);
 			}
-			else if (go.renderer.materials.Length > materialIndex.Value)
+			else if (renderer.materials.Length > materialIndex.Value)
 			{
-				var materials = go.renderer.materials;
+				var materials = renderer.materials;
 				materials[materialIndex.Value].SetColor(colorName, color.Value);
-				go.renderer.materials = materials;			
+				renderer.materials = materials;			
 			}		
 		}
 	}

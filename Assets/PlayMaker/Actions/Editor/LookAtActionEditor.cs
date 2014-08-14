@@ -4,84 +4,88 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections;
 
-[CustomActionEditor(typeof(LookAt))]
-public class LookAtActionEditor : CustomActionEditor
+namespace HutongGames.PlayMakerEditor
 {
-    public override bool OnGUI()
+    [CustomActionEditor(typeof (LookAt))]
+    public class LookAtActionEditor : CustomActionEditor
     {
-        return DrawDefaultInspector();
-    }
-
-    public override void OnSceneGUI()
-    {
-        var lookAtAction = (LookAt)target;
-
-        if(lookAtAction.UpdateLookAtPosition())
+        public override bool OnGUI()
         {
-            var go = target.Fsm.GetOwnerDefaultTarget(lookAtAction.gameObject);   
-            var goTransform = go.transform;
-            var goPosition = goTransform.position;
+            return DrawDefaultInspector();
+        }
 
-            var lookAtPosition = lookAtAction.GetLookAtPosition();
-            var lookAtVector = lookAtPosition - goPosition;
-            var lookAtRotation = Quaternion.LookRotation(lookAtVector);
-            var lookAtAngle = Vector3.Angle(goTransform.forward, lookAtVector);
-            var lookAtNormal = Vector3.Cross(goTransform.forward, lookAtVector);
+        public override void OnSceneGUI()
+        {
+            var lookAtAction = (LookAt) target;
 
-            var handleSize = HandleUtility.GetHandleSize(goPosition);
-            var arrowSize = handleSize*0.2f;
-            var distance = (lookAtPosition - goPosition).magnitude;
-
-            var goTarget = lookAtAction.targetObject.Value;
-
-            // Position handles
-
-            if (!lookAtAction.targetPosition.IsNone)
+            if (lookAtAction.UpdateLookAtPosition())
             {
-                if (goTarget != null)
-                {
-                    // Edit local offset from target object
+                var go = target.Fsm.GetOwnerDefaultTarget(lookAtAction.gameObject);
+                var goTransform = go.transform;
+                var goPosition = goTransform.position;
 
-                    var goTargetTransform = goTarget.transform;
-                    var worldTargetPos = goTargetTransform.TransformPoint(lookAtAction.targetPosition.Value);
+                var lookAtPosition = lookAtAction.GetLookAtPosition();
+                var lookAtVector = lookAtPosition - goPosition;
+                var lookAtRotation = Quaternion.LookRotation(lookAtVector);
+                var lookAtAngle = Vector3.Angle(goTransform.forward, lookAtVector);
+                var lookAtNormal = Vector3.Cross(goTransform.forward, lookAtVector);
+
+                var handleSize = HandleUtility.GetHandleSize(goPosition);
+                var arrowSize = handleSize*0.2f;
+                var distance = (lookAtPosition - goPosition).magnitude;
+
+                var goTarget = lookAtAction.targetObject.Value;
+
+                // Position handles
+
+                if (!lookAtAction.targetPosition.IsNone)
+                {
+                    if (goTarget != null)
+                    {
+                        // Edit local offset from target object
+
+                        var goTargetTransform = goTarget.transform;
+                        var worldTargetPos = goTargetTransform.TransformPoint(lookAtAction.targetPosition.Value);
 
                     lookAtAction.targetPosition.Value = goTargetTransform.InverseTransformPoint(Handles.PositionHandle(worldTargetPos, goTarget.transform.rotation));
-                    Handles.color = new Color(1, 1, 1, 0.2f);
-                    Handles.DrawLine(goTargetTransform.position, lookAtAction.GetLookAtPositionWithVertical());
-                }
-                else
-                {
-                    // Edit world position
+                        Handles.color = new Color(1, 1, 1, 0.2f);
+                        Handles.DrawLine(goTargetTransform.position, lookAtAction.GetLookAtPositionWithVertical());
+                    }
+                    else
+                    {
+                        // Edit world position
 
                     lookAtAction.targetPosition.Value = Handles.PositionHandle(lookAtAction.targetPosition.Value, Quaternion.identity);
+                    }
                 }
-            }
-            
-            // Forward vector
 
-            Handles.color = Color.blue;
-            Handles.DrawLine(goPosition, goPosition + goTransform.forward * handleSize);
+                // Forward vector
 
-            // Lookat vector
+                Handles.color = Color.blue;
+                Handles.DrawLine(goPosition, goPosition + goTransform.forward*handleSize);
 
-            Handles.DrawLine(goPosition, lookAtPosition);
+                // Lookat vector
+
+                Handles.DrawLine(goPosition, lookAtPosition);
             Handles.ConeCap(0, goPosition + lookAtVector.normalized * (distance - arrowSize * 0.7f)  , lookAtRotation, arrowSize); // fudge factor to position cap correctly
 
-            // Arc between vectors
+                // Arc between vectors
 
-            Handles.color = new Color(1, 1, 1, 0.2f);
-            Handles.DrawSolidArc(goPosition, lookAtNormal, goTransform.forward, lookAtAngle, handleSize);
+                Handles.color = new Color(1, 1, 1, 0.2f);
+                Handles.DrawSolidArc(goPosition, lookAtNormal, goTransform.forward, lookAtAngle, handleSize);
 
-            // Show vertical offset
+                // Show vertical offset
 
-            if (lookAtAction.keepVertical.Value)
-            {
-                Handles.DrawLine(lookAtPosition, lookAtAction.GetLookAtPositionWithVertical());
-            }
+                if (lookAtAction.keepVertical.Value)
+                {
+                    Handles.DrawLine(lookAtPosition, lookAtAction.GetLookAtPositionWithVertical());
+                }
 
-            if (GUI.changed)
-            {
-                FsmEditor.EditingActions();
+                if (GUI.changed)
+                {
+                    FsmEditor.EditingActions();
+                    FsmEditor.Repaint(true);
+                }
             }
         }
     }

@@ -42,13 +42,18 @@ namespace HutongGames.PlayMaker.Actions
 		void DoAddMixingTransform()
 		{
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go == null || go.animation == null)
+			if (go == null)
 			{
 				return;
 			}
 
-			var animClip = go.animation[animationName.Value];
+            var animation = go.GetComponent<Animation>();
+            if (animation == null)
+            {
+                return;
+            }
 
+			var animClip = animation[animationName.Value];
 			if (animClip == null)
 			{
 				return;

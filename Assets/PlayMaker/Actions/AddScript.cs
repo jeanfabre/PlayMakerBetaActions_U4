@@ -48,7 +48,7 @@ namespace HutongGames.PlayMaker.Actions
 
 		void DoAddComponent(GameObject go)
 		{
-			addedComponent = go.AddComponent(script.Value);
+			addedComponent = go.AddComponent(ReflectionUtils.GetGlobalType(script.Value));
 
 			if (addedComponent == null)
 			{

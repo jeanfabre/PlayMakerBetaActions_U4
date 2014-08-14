@@ -53,7 +53,7 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
 
-			addedComponent = go.AddComponent(component.Value);
+			addedComponent = go.AddComponent(ReflectionUtils.GetGlobalType(component.Value));
 
 		    storeComponent.Value = addedComponent;
 

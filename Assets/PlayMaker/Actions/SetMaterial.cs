@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Material)]
 	[Tooltip("Sets the material on a game object.")]
-	public class SetMaterial : FsmStateAction
+	public class SetMaterial : ComponentAction<Renderer>
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Renderer))]
@@ -31,24 +31,21 @@ namespace HutongGames.PlayMaker.Actions
 
 		void DoSetMaterial()
 		{
-			GameObject go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go == null) return;
+			var go = Fsm.GetOwnerDefaultTarget(gameObject);
+		    if (!UpdateCache(go))
+		    {
+		        return;
+		    }
 
-			if (go.renderer == null)
-			{
-				LogError("Missing Renderer!");
-				return;
-			}
-			
 			if (materialIndex.Value == 0)
 			{
-				go.renderer.material = material.Value;
+				renderer.material = material.Value;
 			}
-			else if (go.renderer.materials.Length > materialIndex.Value)
+			else if (renderer.materials.Length > materialIndex.Value)
 			{
-				var materials = go.renderer.materials;
+				var materials = renderer.materials;
 				materials[materialIndex.Value] = material.Value;
-				go.renderer.materials = materials;
+				renderer.materials = materials;
 			}
 		}
 	}

@@ -56,7 +56,7 @@ namespace HutongGames.PlayMaker.Actions
 			}
 			else
 			{
-				componentTarget = go.GetComponent(behaviour.Value) as Behaviour;
+				componentTarget = go.GetComponent(ReflectionUtils.GetGlobalType(behaviour.Value)) as Behaviour;
 			}
 
 			if (componentTarget == null)
@@ -90,7 +90,7 @@ namespace HutongGames.PlayMaker.Actions
 	            return null;
 	        }
 
-	        var comp = go.GetComponent(behaviour.Value) as Behaviour;
+	        var comp = go.GetComponent(ReflectionUtils.GetGlobalType(behaviour.Value)) as Behaviour;
 	        return comp != null ? null : "Behaviour missing";
 	    }
 	}

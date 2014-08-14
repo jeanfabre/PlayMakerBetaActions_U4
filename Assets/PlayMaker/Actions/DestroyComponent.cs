@@ -36,8 +36,7 @@ namespace HutongGames.PlayMaker.Actions
 		
 		void DoDestroyComponent(GameObject go)
 		{
-			aComponent = go.GetComponent(component.Value);
-
+			aComponent = go.GetComponent(ReflectionUtils.GetGlobalType(component.Value));
 			if (aComponent == null)
 			{
 				LogError("No such component: " + component.Value);
