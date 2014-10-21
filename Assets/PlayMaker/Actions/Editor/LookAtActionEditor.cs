@@ -67,7 +67,7 @@ namespace HutongGames.PlayMakerEditor
                 // Lookat vector
 
                 Handles.DrawLine(goPosition, lookAtPosition);
-            Handles.ConeCap(0, goPosition + lookAtVector.normalized * (distance - arrowSize * 0.7f)  , lookAtRotation, arrowSize); // fudge factor to position cap correctly
+                Handles.ConeCap(0, goPosition + lookAtVector.normalized * (distance - arrowSize * 0.7f)  , lookAtRotation, arrowSize); // fudge factor to position cap correctly
 
                 // Arc between vectors
 

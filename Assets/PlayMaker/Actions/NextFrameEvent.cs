@@ -24,5 +24,13 @@ namespace HutongGames.PlayMaker.Actions
 
 			Fsm.Event(sendEvent);
 		}
+
+
+#if UNITY_EDITOR
+        public override string AutoName()
+        {
+            return "Next Frame Event: " + sendEvent.Name;
+        }
+#endif
 	}
 }

@@ -16,21 +16,22 @@ namespace HutongGames.PlayMaker.Actions
         [Tooltip("Optional name of FSM on Game Object")]
         public FsmString fsmName;
 
+        [Tooltip("The name of the variable in the target FSM.")]
         public FsmString variableName;
 
         [RequiredField]
-        [HideTypeFilter]
         public FsmVar setValue;
 
         [Tooltip("Repeat every frame.")]
         public bool everyFrame;
 
-        private GameObject cachedGO;
-		string fsmNameLastFrame;
-
-        private PlayMakerFSM sourceFsm;
-        private INamedVariable sourceVariable;
+        private PlayMakerFSM targetFsm;
         private NamedVariable targetVariable;
+        private INamedVariable sourceVariable;
+
+        private GameObject cachedGameObject;
+        private string cachedFsmName;
+        private string cachedVariableName;
 
         public override void Reset()
         {
@@ -41,9 +42,7 @@ namespace HutongGames.PlayMaker.Actions
 
         public override void OnEnter()
         {
-            InitFsmVar();
-
-            DoGetFsmVariable();
+            DoSetFsmVariable();
 
             if (!everyFrame)
             {
@@ -53,53 +52,53 @@ namespace HutongGames.PlayMaker.Actions
 
         public override void OnUpdate()
         {
-            DoGetFsmVariable();
+            DoSetFsmVariable();
         }
 
-        void InitFsmVar()
+        private void DoSetFsmVariable()
         {
+            if (setValue.IsNone || string.IsNullOrEmpty(variableName.Value))
+            {
+                return;
+            }
+
             var go = Fsm.GetOwnerDefaultTarget(gameObject);
             if (go == null)
             {
                 return;
             }
 
-			// FIX: must check as well that the fsm name is different.
-			if (go != cachedGO || fsmName.Value != fsmNameLastFrame)
-			{
-
-				// only get the fsm component if go or fsm name has changed
-
-                sourceFsm = ActionHelpers.GetGameObjectFsm(go, fsmName.Value);
-                sourceVariable = sourceFsm.FsmVariables.GetVariable(setValue.variableName);
-                targetVariable = Fsm.Variables.GetVariable(setValue.variableName);
-
-			    if (targetVariable != null)
-			    {
-			        setValue.Type = targetVariable.VariableType;
-			    }
-
-                if (!string.IsNullOrEmpty(setValue.variableName) && sourceVariable == null)
-                {
-                    LogWarning("Missing Variable: " + setValue.variableName);
-                }
-
-                cachedGO = go;
-				fsmNameLastFrame = fsmName.Value;
-            }
-        }
-
-        void DoGetFsmVariable()
-        {
-            if (setValue.IsNone)
+            if (go != cachedGameObject || fsmName.Value != cachedFsmName)
             {
+                targetFsm = ActionHelpers.GetGameObjectFsm(go, fsmName.Value);
+                if (targetFsm == null)
+                {
+                    return;
+                }
+                cachedGameObject = go;
+                cachedFsmName = fsmName.Value;
+            }
+
+            if (variableName.Value != cachedVariableName)
+            {
+                targetVariable = targetFsm.FsmVariables.FindVariable(setValue.Type, variableName.Value);
+                cachedVariableName = variableName.Value;
+            }
+
+            if (targetVariable == null)
+            {
+                LogWarning("Missing Variable: " + variableName.Value);
                 return;
             }
 
-            InitFsmVar();
-
-            setValue.GetValueFrom(sourceVariable);
             setValue.ApplyValueTo(targetVariable);
         }
+
+#if UNITY_EDITOR
+        public override string AutoName()
+        {
+            return ("Set FSM Variable: " + ActionHelpers.GetValueLabel(variableName));
+        }
+#endif
     }
 }

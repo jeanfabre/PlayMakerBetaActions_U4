@@ -88,5 +88,12 @@ namespace HutongGames.PlayMaker.Actions
             storeValue.GetValueFrom(sourceVariable);
             storeValue.ApplyValueTo(targetVariable);
         }
+
+#if UNITY_EDITOR
+        public override string AutoName()
+        {
+            return ("Get FSM Variable: " + ActionHelpers.GetValueLabel(storeValue.NamedVar));
+        }
+#endif
     }
 }

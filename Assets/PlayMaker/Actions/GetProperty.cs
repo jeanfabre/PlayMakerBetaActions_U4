@@ -33,6 +33,16 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			targetProperty.GetValue();
 		}
+
+#if UNITY_EDITOR
+        public override string AutoName()
+        {
+            var name = string.IsNullOrEmpty(targetProperty.PropertyName) ? "[none]" : targetProperty.PropertyName;
+            return "Get Property: "+ name;
+            //var value = ActionHelpers.GetValueLabel(targetProperty.GetVariable());
+            //return string.Format("Get {0} to {1}", name, value);
+        }
+#endif
 	}
 }
 

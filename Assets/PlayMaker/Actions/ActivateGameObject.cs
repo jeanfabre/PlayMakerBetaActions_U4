@@ -121,5 +121,12 @@ namespace HutongGames.PlayMaker.Actions
             }
         } 
 #endif
+
+#if UNITY_EDITOR
+        public override string AutoName()
+        {
+            return (activate.Value ? "Activate " : "Deactivate ") + ActionHelpers.GetValueLabel(Fsm, gameObject);
+        }
+#endif
     }
 }

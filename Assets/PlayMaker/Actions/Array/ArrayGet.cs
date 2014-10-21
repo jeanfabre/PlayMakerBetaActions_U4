@@ -85,5 +85,11 @@ namespace HutongGames.PlayMaker.Actions
             return "";
         }*/
 
+#if UNITY_EDITOR
+        public override string AutoName()
+        {
+            return ActionHelpers.GetValueLabel(storeValue.NamedVar) + "=" + array.Name + "[" + ActionHelpers.GetValueLabel(index) + "]";
+        }
+#endif
     }
 }

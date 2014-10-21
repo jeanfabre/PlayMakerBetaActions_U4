@@ -62,6 +62,7 @@ namespace HutongGames.PlayMaker.Actions
 
             if (index.Value >= 0 && index.Value < array.Length)
             {
+                value.UpdateValue();
                 array.Set(index.Value, value.GetValue());
             }
             else
