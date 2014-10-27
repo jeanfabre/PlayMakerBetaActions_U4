@@ -57,7 +57,7 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-			storeValue.SetValue(array.Get(Random.Range(0,array.Length-1)));
+			storeValue.SetValue(array.Get(Random.Range(0,array.Length)));
 		
 		}
 
