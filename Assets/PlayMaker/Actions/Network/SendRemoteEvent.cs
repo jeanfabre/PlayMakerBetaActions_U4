@@ -51,7 +51,7 @@ namespace HutongGames.PlayMaker.Actions
 	
 			if (!stringData.IsNone && stringData.Value != "")
 			{
-				networkView.RPC("SendRemoteFsmEvent", mode, remoteEvent.Name,stringData.Value);
+				networkView.RPC("SendRemoteFsmEventWithData", mode, remoteEvent.Name,stringData.Value);
 			}
 			else
 			{

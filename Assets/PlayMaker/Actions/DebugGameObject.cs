@@ -4,31 +4,32 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Debug)]
 	[Tooltip("Logs the value of a Game Object Variable in the PlayMaker Log Window.")]
-	public class DebugGameObject : FsmStateAction
+	public class DebugGameObject : BaseLogAction
 	{
         [Tooltip("Info, Warning, or Error.")]
         public LogLevel logLevel;
 
 		[UIHint(UIHint.Variable)]
-        [Tooltip("Prints the value of a GameObject variable in the PlayMaker log window.")]
+        [Tooltip("The GameObject variable to debug.")]
 		public FsmGameObject gameObject;
 
 		public override void Reset()
 		{
 			logLevel = LogLevel.Info;
 			gameObject = null;
+            base.Reset();
 		}
 
 		public override void OnEnter()
 		{
-			string text = "None";
+			var text = "None";
 			
 			if (!gameObject.IsNone)
 			{
 				text = gameObject.Name + ": " + gameObject;
 			}
 			
-			ActionHelpers.DebugLog(Fsm, logLevel, text);
+			ActionHelpers.DebugLog(Fsm, logLevel, text, sendToUnityLog);
 			
 			Finish();
 		}

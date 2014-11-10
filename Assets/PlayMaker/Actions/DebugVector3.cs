@@ -4,31 +4,32 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Debug)]
 	[Tooltip("Logs the value of a Vector3 Variable in the PlayMaker Log Window.")]
-	public class DebugVector3 : FsmStateAction
+	public class DebugVector3 : BaseLogAction
 	{
         [Tooltip("Info, Warning, or Error.")]
 		public LogLevel logLevel;
 
 		[UIHint(UIHint.Variable)]
-        [Tooltip("Prints the value of a Vector3 variable in the PlayMaker log window.")]
+        [Tooltip("The Vector3 variable to debug.")]
 		public FsmVector3 vector3Variable;
 
 		public override void Reset()
 		{
 			logLevel = LogLevel.Info;
 			vector3Variable = null;
+            base.Reset();
 		}
 
 		public override void OnEnter()
 		{
-			string text = "None";
+			var text = "None";
 			
 			if (!vector3Variable.IsNone)
 			{
 				text = vector3Variable.Name + ": " + vector3Variable.Value;
 			}
 
-			ActionHelpers.DebugLog(Fsm, logLevel, text);
+			ActionHelpers.DebugLog(Fsm, logLevel, text, sendToUnityLog);
 
 			Finish();
 		}

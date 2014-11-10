@@ -6,7 +6,7 @@ using HutongGames.PlayMaker;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Camera)]
-	[Tooltip("Sets the main camera.")]
+	[Tooltip("Sets the Main Camera.")]
 	public class SetMainCamera : FsmStateAction
 	{
 		[RequiredField]

@@ -4,13 +4,13 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Debug)]
 	[Tooltip("Logs the value of an Integer Variable in the PlayMaker Log Window.")]
-	public class DebugInt : FsmStateAction
+	public class DebugInt : BaseLogAction
 	{
         [Tooltip("Info, Warning, or Error.")]
         public LogLevel logLevel;
 
 		[UIHint(UIHint.Variable)]
-        [Tooltip("Prints the value of an Int variable in the PlayMaker log window.")]
+        [Tooltip("The Int variable to debug.")]
 		public FsmInt intVariable;
 
 		public override void Reset()
@@ -21,14 +21,14 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void OnEnter()
 		{
-			string text = "None";
+			var text = "None";
 			
 			if (!intVariable.IsNone)
 			{
 				text = intVariable.Name + ": " + intVariable.Value;
 			}
 
-			ActionHelpers.DebugLog(Fsm, logLevel, text);
+			ActionHelpers.DebugLog(Fsm, logLevel, text, sendToUnityLog);
 
 			Finish();
 		}

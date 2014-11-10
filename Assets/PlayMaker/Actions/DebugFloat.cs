@@ -4,19 +4,20 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Debug)]
 	[Tooltip("Logs the value of a Float Variable in the PlayMaker Log Window.")]
-	public class DebugFloat : FsmStateAction
+	public class DebugFloat : BaseLogAction
 	{
         [Tooltip("Info, Warning, or Error.")]
         public LogLevel logLevel;
 		
         [UIHint(UIHint.Variable)]
-        [Tooltip("Prints the value of a Float variable in the PlayMaker log window.")]
+        [Tooltip("The Float variable to debug.")]
 		public FsmFloat floatVariable;
 
 		public override void Reset()
 		{
 			logLevel = LogLevel.Info;
 			floatVariable = null;
+            base.Reset();
 		}
 
 		public override void OnEnter()
@@ -28,7 +29,7 @@ namespace HutongGames.PlayMaker.Actions
 				text = floatVariable.Name + ": " + floatVariable.Value;
 			}
 
-			ActionHelpers.DebugLog(Fsm, logLevel, text);
+			ActionHelpers.DebugLog(Fsm, logLevel, text, sendToUnityLog);
 
 			Finish();
 		}

@@ -29,7 +29,13 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void OnEnter()
 		{
+			Find();
 			Finish();
+		}
+
+		void Find()
+		{
+
 
 			if (withTag.Value != "Untagged")
 			{
@@ -55,6 +61,9 @@ namespace HutongGames.PlayMaker.Actions
 			}
 
 			store.Value = GameObject.Find(objectName.Value);
+
+
+
 		}
 
 		public override string ErrorCheck()

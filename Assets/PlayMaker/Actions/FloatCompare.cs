@@ -17,7 +17,7 @@ namespace HutongGames.PlayMaker.Actions
 		public FsmFloat float2;
 
 		[RequiredField]
-        [Tooltip("Tolerance for the Equal test (almost equal).")]
+        [Tooltip("Tolerance for the Equal test (almost equal).\nNOTE: Floats that look the same are often not exactly the same, so you often need to use a small tolerance.")]
 		public FsmFloat tolerance;
 
 		[Tooltip("Event sent if Float 1 equals Float 2 (within Tolerance)")]

@@ -4,19 +4,20 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Debug)]
 	[Tooltip("Logs the value of a Bool Variable in the PlayMaker Log Window.")]
-	public class DebugBool : FsmStateAction
+	public class DebugBool : BaseLogAction
 	{
         [Tooltip("Info, Warning, or Error.")]
         public LogLevel logLevel;
 		
         [UIHint(UIHint.Variable)]
-        [Tooltip("Prints the value of a Bool variable in the PlayMaker log window.")]
+        [Tooltip("The Bool variable to debug.")]
 		public FsmBool boolVariable;
 
 		public override void Reset()
 		{
 			logLevel = LogLevel.Info;
 			boolVariable = null;
+            base.Reset();
 		}
 
 		public override void OnEnter()
@@ -28,7 +29,7 @@ namespace HutongGames.PlayMaker.Actions
 				text = boolVariable.Name + ": " + boolVariable.Value;
 			}
 			
-			ActionHelpers.DebugLog(Fsm, logLevel, text);
+			ActionHelpers.DebugLog(Fsm, logLevel, text, sendToUnityLog);
 						
 			Finish();
 		}
