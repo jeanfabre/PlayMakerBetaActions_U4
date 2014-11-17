@@ -18,7 +18,6 @@ namespace HutongGames.PlayMaker.Actions
 		public FsmString fsmName;
 		
 		[RequiredField]
-		//[UIHint(UIHint.fsm)]
 		[Tooltip("The name of the FSM variable.")]
 		public FsmString variableName;
 		

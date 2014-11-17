@@ -20,9 +20,9 @@ namespace HutongGames.PlayMaker.Actions
 		[ActionSection("Result")]
 		
 		[RequiredField]
-		[MatchFieldType("array")]
 		[UIHint(UIHint.Variable)]
 		[Tooltip("Store the value in a variable.")]
+		[MatchElementType("array")]
 		public FsmVar storeValue;
 
 		public override void Reset()

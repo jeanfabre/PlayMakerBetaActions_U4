@@ -15,7 +15,7 @@ namespace HutongGames.PlayMaker.Actions
 		public FsmArray array;
 		
 		[RequiredField]
-		[MatchFieldType("array")]
+		[MatchElementType("array")]
 		[Tooltip("The variables to add.")]
 		public FsmVar[] variables;
 		
