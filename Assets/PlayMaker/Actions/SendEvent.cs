@@ -19,7 +19,7 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Optional delay in seconds.")]
 		public FsmFloat delay;
 
-		[Tooltip("Repeat every frame. Rarely needed.")]
+		[Tooltip("Repeat every frame. Rarely needed, but can be useful when sending events to other FSMs.")]
 		public bool everyFrame;
 
 		private DelayedEvent delayedEvent;
@@ -37,7 +37,10 @@ namespace HutongGames.PlayMaker.Actions
 			if (delay.Value < 0.001f)
 			{
 				Fsm.Event(eventTarget, sendEvent);
-				Finish();
+			    if (!everyFrame)
+			    {
+			        Finish();
+			    }
 			}
 			else
 			{
@@ -53,6 +56,10 @@ namespace HutongGames.PlayMaker.Actions
 				{
 					Finish();
 				}
+			}
+			else
+			{
+                Fsm.Event(eventTarget, sendEvent);
 			}
 		}
 	}

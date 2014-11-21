@@ -109,6 +109,14 @@ namespace HutongGames.PlayMaker.Actions
 				case "Object":
 					parameter = functionCall.ObjectParameter.Value;
 					break;
+
+                case "Enum":
+                    parameter = functionCall.EnumParameter.Value;
+                    break;
+
+                case "Array":
+                    parameter = functionCall.ArrayParameter.Values;
+                    break;
 			}
 
 			switch (delivery)

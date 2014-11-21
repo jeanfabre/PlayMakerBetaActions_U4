@@ -32,11 +32,11 @@ namespace HutongGames.PlayMaker.Actions
 		public FsmFloat rotationDamping;
 
 		// Cache for performance
-		private GameObject cachedObect;
+		private GameObject cachedObject;
 		private Transform myTransform;
-		private GameObject cachedTargetObject;
+		
+		private GameObject cachedTarget;
 		private Transform targetTransform;
-
 
 		public override void Reset()
 		{
@@ -61,19 +61,19 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 			
-			if (cachedObect != go)
+			if (cachedObject != go)
 			{
-				cachedObect = go;
+				cachedObject = go;
 				myTransform = go.transform;
+			}
 			
-			}
-
-			if (cachedTargetObject != targetObject.Value)
+			if (cachedTarget != targetObject.Value)
 			{
-				cachedTargetObject = targetObject.Value;
-				targetTransform = targetObject.Value.transform;
+				cachedTarget = targetObject.Value;
+				targetTransform = cachedTarget.transform;
 			}
-
+			
+			
 			// Calculate the current rotation angles
 			var wantedRotationAngle = targetTransform.eulerAngles.y;
 			var wantedHeight = targetTransform.position.y + height.Value;
