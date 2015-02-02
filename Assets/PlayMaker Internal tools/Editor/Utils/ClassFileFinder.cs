@@ -67,23 +67,25 @@ public static class ClassFileFinder
 		//Lookup class name in the class file text 
 		for (int i = 0; i < classFiles.Count; i++)
 		{
-			string codeFile = File.ReadAllText(classFiles[i]);
+			string filePath = classFiles[i];
+			string codeFile = File.ReadAllText(filePath);
 			foreach(string className in classNames)
 			{
-				if (codeFile.Contains("partial class " + className+": EnumClassBase") && !classDetailsList.ContainsKey(classFiles[i]))
+				if (codeFile.Contains("partial class " + className+": EnumClassBase") && !classDetailsList.ContainsKey(filePath))
 				{
+
 					string nameSpace = "";
 
-
-					classDetailsList.Add (
-							classFiles[i],
-							new ClassFileDetails(
-										className, 
-										nameSpace,
-										classFiles[i], 
-										File.GetLastWriteTimeUtc(classFiles[i])
-										)
+					ClassFileDetails _details = new ClassFileDetails(
+						className, 
+						nameSpace,
+						filePath, 
+						File.GetLastWriteTimeUtc(filePath)
 						);
+
+					_details.projectPath =  filePath.Substring(Application.dataPath.Length+1);
+
+					classDetailsList.Add (filePath,_details);
 				}
 			}
 		}
@@ -92,6 +94,56 @@ public static class ClassFileFinder
 		return classDetailsList;
 
 	}
+
+
+	public static Dictionary<string,EnumFileDetails> FindEnumFiles()
+	{
+		
+		//Lookup enums in file names
+		Dictionary<string,EnumFileDetails> enumDetailsList = new Dictionary<string,EnumFileDetails>();
+		
+		classFiles = new List<string>();
+		FindAllScriptFiles(Application.dataPath);
+		
+		//Lookup class name in the class file text 
+		for (int i = 0; i < classFiles.Count; i++)
+		{
+			string filePath = classFiles[i];
+			string codeFile = File.ReadAllText(filePath);
+
+			if (codeFile.Contains("["+"PLAYMAKER_ENUM]")) // compose the tag to avoid this file to be found...
+			{
+
+
+				// read all lines, we are going to parse data
+				string[] lines = File.ReadAllLines(filePath);
+
+				// safety precaution
+				if (lines.Length<10)
+				{
+					continue;
+				}
+
+				string nameSpace = lines[5].Substring(10);
+				string enumName	= lines[7].Substring(13);
+
+				EnumFileDetails _details = new EnumFileDetails(
+					enumName, 
+					nameSpace,
+					filePath, 
+					File.GetLastWriteTimeUtc(filePath)
+					);
+				
+				_details.projectPath =  filePath.Substring(Application.dataPath.Length+1);
+				
+				enumDetailsList.Add (filePath,_details);
+			}
+
+		}
+
+		return enumDetailsList;
+	}
+
 
 	public static Dictionary<string,ClassFileDetails> GetEnumerableOfType<T>() where T : class
 	{
@@ -110,6 +162,8 @@ public static class ClassFileFinder
 
 		return FindClassFiles(_shortList);
 	}
+
+
 
 	static List<string> classFiles;
 	static void FindAllScriptFiles(string startDir)
@@ -139,7 +193,9 @@ public class ClassFileDetails
 {
 	public string className { get; set; }
 	public string nameSpace { get; set; }
+	public string fileName { get; set; }
 	public string path { get; set; }
+	public string projectPath { get; set; }
 	public System.DateTime updateTime { get; set; }
 
 	public override string ToString ()
@@ -155,6 +211,39 @@ public class ClassFileDetails
 		nameSpace = setNameSpace;
 		path = setPath;
 		updateTime = setUpdateTime;
+
+		FileInfo _info = new FileInfo(setPath);
+		fileName = _info.Name;
+
+		//DatabaseLink.StoreClassFileDetails(this);
+	}
+}
+
+public class EnumFileDetails
+{
+	public string enumName { get; set; }
+	public string nameSpace { get; set; }
+	public string fileName { get; set; }
+	public string path { get; set; }
+	public string projectPath { get; set; }
+	public System.DateTime updateTime { get; set; }
+	
+	public override string ToString ()
+	{
+		return string.Format ("[EnumFileDetails: enumName={0}, path={1}, updateTime={2}]", enumName, path, updateTime);
+	}
+	
+	internal EnumFileDetails()
+	{ }
+	internal EnumFileDetails(string setEnumName,string setNameSpace, string setPath, System.DateTime setUpdateTime)
+	{
+		enumName = setEnumName;
+		nameSpace = setNameSpace;
+		path = setPath;
+		updateTime = setUpdateTime;
+		
+		FileInfo _info = new FileInfo(setPath);
+		fileName = _info.Name;
 		
 		//DatabaseLink.StoreClassFileDetails(this);
 	}

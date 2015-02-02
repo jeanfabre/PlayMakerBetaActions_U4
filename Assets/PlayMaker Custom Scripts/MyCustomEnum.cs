@@ -1,14 +1,16 @@
 // (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
 // DO NOT EDIT, THIS CONTENT IS AUTOMATICALLY GENERATED
-// [PLAYMAKER_ENUM]
+// [TAG]
 // Please use PlayMaker Enum Creator Wizard to edit this enum definition
 
-namespace Test
+namespace Some.Namespace
 {
-	public enum MyEnum
+	public enum MyCustomEnum
 	{
-		asd
+		ItemA,
+		ItemB,
+		ItemC,
+		ItemD,
+		ItemE		
 	}
 }
-
-

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 using UnityEditor;
 using UnityEngine;
@@ -20,43 +21,34 @@ namespace HutongGames.PlayMakerEditor
 	
 		#region Logic 
 
-		static string Template_Header = @"// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
+		static string Template_MainStructure = @"// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
 // DO NOT EDIT, THIS CONTENT IS AUTOMATICALLY GENERATED
+// [TAG]
 // Please use PlayMaker Enum Creator Wizard to edit this enum definition
 
-using System;
-using HutongGames.PlayMaker.Utils.Enum;
-
-[CONTENT]
+namespace [NAMESPACE]
+{
+	public enum [ENUM_NAME]
+	{
+[ENUM_ENTRIES]		
+	}
+}
 ";
 
-		static string Template_NameSpace = @"namespace [NAMESPACE]
-{
-[CONTENT]
-}";
+		static string Template_EnumEntry = "\t\t{0}{1}";
 
-		static string Template_Class = @"[TAB]public abstract partial class [CLASS_NAME]: EnumClassBase 
-[TAB]{
-[TAB]	public enum [ENUM_NAME]
-[TAB]	{
-[CONTENT]
-[TAB]	}
-[TAB]}";
-	
-		static string Template_EnumEntry = "{0}\t\t{1}{2}";
-
-
-		class EnumDefinition
+		[Serializable]
+		public class EnumDefinition
 		{
 			public string NameSpace = "Net.FabreJean";
 			public string Name = "MyEnum";
-			public string FolderPath = "";
+			public string FolderPath = "PlayMaker Custom Scripts/";
 			public List<string> entries = new List<string>();
 
 			public string ScriptLiteral ="";
 		}
 
-		EnumDefinition currentEnum = new EnumDefinition();
+		public EnumDefinition currentEnum = new EnumDefinition();
 
 		/// <summary>
 		/// Create a new script featuring the new enum.
@@ -82,47 +74,78 @@ using HutongGames.PlayMaker.Utils.Enum;
 
 		void BuildScriptLiteral()
 		{
-			string _tab = "";
-			string scriptLiteral = Template_Header;
-			if (!string.IsNullOrEmpty(currentEnum.NameSpace))
-			{
-				string _nameSpaceLiteral = Template_NameSpace.Replace("[NAMESPACE]",currentEnum.NameSpace);
-				scriptLiteral = scriptLiteral.Replace("[CONTENT]",_nameSpaceLiteral);
-				_tab = "\t";
-			}
-		
-			// build the class literal
-			string _classLiteral = Template_Class.Replace("[CLASS_NAME]",currentEnum.Name+"Class");
-			_classLiteral = _classLiteral.Replace("[ENUM_NAME]",currentEnum.Name);
-			_classLiteral = _classLiteral.Replace("[TAB]",_tab);
-			// Add the class to the script
-			scriptLiteral = scriptLiteral.Replace("[CONTENT]",_classLiteral);
+			string scriptLiteral = Template_MainStructure;
 
+			scriptLiteral = Template_MainStructure.Replace("[TAG]","["+"PLAYMAKER_ENUM]"); // we recompose the tag to avoid detection of this very script
+			scriptLiteral = Template_MainStructure.Replace("[NAMESPACE]",currentEnum.NameSpace);
+		
+			scriptLiteral = scriptLiteral.Replace("[ENUM_NAME]",currentEnum.Name);
+	
 			string _entriesLiteral = "";
 			for(int i=0;i<currentEnum.entries.Count;i++)
 			{
-				_entriesLiteral += string.Format(Template_EnumEntry,_tab,currentEnum.entries[i],"");
+				_entriesLiteral += string.Format(Template_EnumEntry,currentEnum.entries[i],"");
 				if (i+1<currentEnum.entries.Count)
 				{
-					_entriesLiteral += ",";
+					_entriesLiteral += ",\r\n";
 				}
-				_entriesLiteral += "\r\n";
+
 			}
-			scriptLiteral = scriptLiteral.Replace("[CONTENT]",_entriesLiteral);
+			scriptLiteral = scriptLiteral.Replace("[ENUM_ENTRIES]",_entriesLiteral);
 
 			currentEnum.ScriptLiteral = scriptLiteral;
 		}
-		#endregion
+
+		void StartEditingEnum(EnumFileDetails enumDetails)
+		{
+			_sourceDetails = enumDetails;
+
+			currentEnum = new EnumDefinition();
+
+			// nameSpace
+			currentEnum.NameSpace = enumDetails.nameSpace;
+
+			currentEnum.Name = enumDetails.enumName;
+
+			Type _type = System.Type.GetType(currentEnum.NameSpace+"."+currentEnum.Name+", Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+		
+			Debug.Log(currentEnum.Name+" : "+_type);
+
+			currentEnum.entries = new List<string>();
+
+			FieldInfo[] fields = _type.GetFields();
+			
+			foreach (var field in fields) {
+				if (field.Name.Equals("value__")) continue;
+
+				currentEnum.entries.Add(field.Name);
+				//Debug.Log(field.Name + ":" + field.GetRawConstantValue());
+			}
+
+			Repaint();
+			ReBuildPreview = true;
+			GUI.FocusControl(_unfocusControlName);
+
+		}
+
+		#endregion Logic
 
 		#region UI
 
 		bool showForm;
 
+		static string _unfocusControlName ="Unfocus";
+
 		public void OnGUI()
 		{
 			FsmEditorStyles.Init();
 			FsmEditorGUILayout.ToolWindowLargeTitle(this, "Enum Creator");
-			
+
+			// unfocus invisible field
+			GUI.SetNextControlName(_unfocusControlName);
+			GUI.TextField(new Rect(0,-100,100,20),"");
+
+
 			OnGUI_ToolBar();
 
 			if (showForm)
@@ -154,23 +177,48 @@ using HutongGames.PlayMaker.Utils.Enum;
 
 		}
 
-		Dictionary<string,ClassFileDetails> _list;
+		Dictionary<string,EnumFileDetails> _list;
 		void OnGUI_DoEditableEnumList()
 		{
 			if (GUILayout.Button("Find Editable Enums in Projects"))
 			{
-				_list = ClassFileFinder.GetEnumerableOfType<EnumClassBase>();
+				_list = ClassFileFinder.FindEnumFiles();
 			}
 
 			if (_list!=null)
 			{
-				foreach(KeyValuePair<string,ClassFileDetails> i in _list)
+				foreach(KeyValuePair<string,EnumFileDetails> i in _list)
 				{
-					GUILayout.Label(i.Key);
-					GUILayout.Label(i.Value.nameSpace+" : "+i.Value.className+" LastUpdate: "+i.Value.updateTime);
+					OnGUI_doEditableEnumItem(i.Key,i.Value);
 				}
 			}
 
+		}
+
+		EnumFileDetails _sourceDetails;
+
+		void OnGUI_doEditableEnumItem(string filePath,EnumFileDetails details)
+		{
+			GUILayout.BeginHorizontal();
+
+			GUILayout.Label(details.nameSpace+"."+details.enumName);
+
+			GUILayout.FlexibleSpace();
+
+			if (GUILayout.Button("Select in Project"))
+			{
+				var _object = AssetDatabase.LoadAssetAtPath("Assets/"+details.projectPath,typeof(UnityEngine.Object));
+
+				EditorGUIUtility.PingObject(_object.GetInstanceID());
+				Selection.activeInstanceID = _object.GetInstanceID();
+			}
+
+			if (GUILayout.Button("Edit"))
+			{
+				StartEditingEnum(details);
+			}
+
+			GUILayout.EndHorizontal();
 		}
 
 		bool ReBuildPreview;
@@ -180,8 +228,9 @@ using HutongGames.PlayMaker.Utils.Enum;
 
 			ReBuildPreview = false;
 
+			GUILayout.Label("Project Folder:");
+			currentEnum.FolderPath = GUILayout.TextField(currentEnum.FolderPath);
 
-		
 			GUILayout.Label("NameSpace:");
 		
 			string _nameSpace = GUILayout.TextField(currentEnum.NameSpace);
@@ -191,11 +240,7 @@ using HutongGames.PlayMaker.Utils.Enum;
 				ReBuildPreview = true;
 			}
 
-			GUILayout.Label("Project Folder:");
-			GUILayout.Label(Application.dataPath+"/");
-			currentEnum.FolderPath = GUILayout.TextField(currentEnum.FolderPath);
-
-			GUILayout.Label("Enum Name");
+			GUILayout.Label("Enum Name:");
 			string _name = GUILayout.TextField(currentEnum.Name);
 			if (!string.Equals(_name,currentEnum.Name))
 			{
@@ -208,16 +253,28 @@ using HutongGames.PlayMaker.Utils.Enum;
 			ReorderableListGUI.ListField(currentEnum.entries,DrawListItem);
 			FsmEditorGUILayout.Divider();
 
-			if (GUILayout.Button("Create")) // Label "Save Changes" when we detected that we are editing an existing enum
-			{
-				DoCreateEnum();
-			}
-		
+			GUILayout.BeginHorizontal();
+
+				if (GUILayout.Button("Cancel Changes"))
+				{
+					StartEditingEnum(_sourceDetails);
+				}
+
+				GUILayout.Space(50);
+
+				if (GUILayout.Button("Create")) // Label "Save Changes" when we detected that we are editing an existing enum
+				{
+					DoCreateEnum();
+				}
+
+			GUILayout.EndHorizontal();
 
 			FsmEditorGUILayout.Divider();
+
+			GUILayout.Label("Code Source Preview:");
 			GUILayout.TextArea(currentEnum.ScriptLiteral);
 
-			if (ReBuildPreview)
+			if (ReBuildPreview || string.IsNullOrEmpty(currentEnum.ScriptLiteral))
 			{
 				BuildScriptLiteral();
 				Repaint();

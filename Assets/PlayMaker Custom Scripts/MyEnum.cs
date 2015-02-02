@@ -3,12 +3,9 @@
 // [PLAYMAKER_ENUM]
 // Please use PlayMaker Enum Creator Wizard to edit this enum definition
 
-namespace Test
+namespace Net.FabreJean
 {
 	public enum MyEnum
 	{
-		asd
 	}
 }
-
-

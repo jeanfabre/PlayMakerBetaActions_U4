@@ -1,14 +1,12 @@
 // (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
 // DO NOT EDIT, THIS CONTENT IS AUTOMATICALLY GENERATED
-// [PLAYMAKER_ENUM]
+// [TAG]
 // Please use PlayMaker Enum Creator Wizard to edit this enum definition
 
-namespace Test
+namespace Net.FabreJean
 {
-	public enum MyEnum
+	public enum MyEnumasda
 	{
-		asd
+		
 	}
 }
-
-
