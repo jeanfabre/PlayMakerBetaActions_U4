@@ -18,7 +18,9 @@ namespace HutongGames.PlayMaker.Actions
 	public class RectTransformGetCorners : FsmStateActionAdvanced
 	{
 		[RequiredField]
-		[CheckForComponent(typeof(RectTransform))]
+#if UNITY_4_6 
+		[CheckForComponent(typeof(RectTransform))] 
+#endif
 		[Tooltip("The GameObject target.")]
 		public FsmOwnerDefault gameObject;
 
@@ -46,7 +48,9 @@ namespace HutongGames.PlayMaker.Actions
 		public FsmArray allCorners;
 
 
+#if UNITY_4_6
 		RectTransform _rt;
+#endif
 		Vector3[] corners = new Vector3[4];
 
 		public override void Reset()
@@ -66,7 +70,9 @@ namespace HutongGames.PlayMaker.Actions
 			GameObject go = Fsm.GetOwnerDefaultTarget(gameObject);
 			if (go != null)
 			{
+#if UNITY_4_6
 				_rt = go.GetComponent<RectTransform>();
+#endif
 			}
 			
 			DoGetValues();
@@ -84,6 +90,7 @@ namespace HutongGames.PlayMaker.Actions
 		
 		void DoGetValues()
 		{
+			#if UNITY_4_6
 			if (localspace.Value)
 			{
 				_rt.GetLocalCorners(corners);
@@ -96,6 +103,9 @@ namespace HutongGames.PlayMaker.Actions
 			if (!bottomRight.IsNone) bottomRight.Value = corners[3];
 
 			if (!allCorners.IsNone) allCorners.Values = Array.ConvertAll(corners, item => (object)item);
+			#endif
 		}
+
 	}
+
 }
