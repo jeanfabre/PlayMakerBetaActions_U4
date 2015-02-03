@@ -139,67 +139,119 @@ namespace [NAMESPACE]
 		public void OnGUI()
 		{
 			FsmEditorStyles.Init();
-			FsmEditorGUILayout.ToolWindowLargeTitle(this, "Enum Creator");
 
 			// unfocus invisible field
 			GUI.SetNextControlName(_unfocusControlName);
 			GUI.TextField(new Rect(0,-100,100,20),"");
+		
+			FsmEditorGUILayout.ToolWindowLargeTitle(this, "Enum Creator");
 
-
+			OnGUI_HorizontalSplitView();
+			/*
 			OnGUI_ToolBar();
 
 			if (showForm)
 			{
 				OnGUI_DoEnumDefinitionForm();
 			}
+
+			*/
 		}
-		
-		void OnGUI_ToolBar()
+
+
+		[SerializeField]
+		float currentScrollViewHeight = -1f;
+		bool resize = false;
+		Rect cursorChangeRect;
+
+		void OnGUI_HorizontalSplitView()
 		{
-			FsmEditorGUILayout.Divider();
-			
-			GUILayout.Space(5);
+		
+			GUILayout.BeginVertical();
 
-			OnGUI_DoEditableEnumList();
+				OnGUI_DoEditableEnumList(currentScrollViewHeight);
 
-			FsmEditorGUILayout.Divider();
-			
-			GUILayout.Space(5);
+			OnGUI_HorizontalResizeScrollView();
 
-			if (!showForm)
+				OnGUI_DoEnumDefinitionForm();
+
+			GUILayout.EndVertical();
+
+			if (resize) Repaint();
+		}
+
+		void OnGUI_HorizontalResizeScrollView(){
+
+			if (currentScrollViewHeight<0)
 			{
-				if ( GUILayout.Button("New Enum") )
+				currentScrollViewHeight = 100;
+
+				cursorChangeRect = new Rect(0,currentScrollViewHeight,this.position.width,5f);
+			}
+
+			FsmEditorGUILayout.Divider();
+
+			GUI.Box(cursorChangeRect,"","box");
+		
+			FsmEditorGUILayout.Divider();
+
+			GUILayout.Space(5);
+
+			if (resize)
+			{
+				EditorGUIUtility.AddCursorRect(this.position,MouseCursor.ResizeVertical);
+
+				currentScrollViewHeight = Mathf.Max(65,Event.current.mousePosition.y);
+
+				if(Event.current.type == EventType.MouseUp)
 				{
-					currentEnum = new EnumDefinition();
-					showForm = true;
+					resize = false;  
+				}
+
+			}else{
+				EditorGUIUtility.AddCursorRect(cursorChangeRect,MouseCursor.ResizeVertical);
+				if( Event.current.type == EventType.mouseDown && cursorChangeRect.Contains(Event.current.mousePosition)){
+					resize = true;
+					currentScrollViewHeight = Event.current.mousePosition.y;
+
 				}
 			}
+    
+			cursorChangeRect.Set(cursorChangeRect.x,currentScrollViewHeight,this.position.width,cursorChangeRect.height);
 
 		}
 
+		[SerializeField]
+		Vector2 EnumListScrollPosition;
+
 		Dictionary<string,EnumFileDetails> _list;
-		void OnGUI_DoEditableEnumList()
+		void OnGUI_DoEditableEnumList(float height)
 		{
-			if (GUILayout.Button("Find Editable Enums in Projects"))
-			{
-				_list = ClassFileFinder.FindEnumFiles();
-			}
+
+			GUILayout.Label("Editable Enums");
+
+			//Rect _lastRect = GUILayoutUtility.GetLastRect();
+			// I am failing to get the proper height, because of the title and label above the scrollview... 
+			// so 61 is the top banner and the label above...
+			EnumListScrollPosition = GUILayout.BeginScrollView(EnumListScrollPosition,GUILayout.Height(height-61));
 
 			if (_list!=null)
 			{
 				foreach(KeyValuePair<string,EnumFileDetails> i in _list)
 				{
-					OnGUI_doEditableEnumItem(i.Key,i.Value);
+					OnGUI_DoEditableEnumItem(i.Key,i.Value);
 				}
 			}
 
+			GUILayout.EndScrollView();
 		}
 
 		EnumFileDetails _sourceDetails;
 
-		void OnGUI_doEditableEnumItem(string filePath,EnumFileDetails details)
+
+		void OnGUI_DoEditableEnumItem(string filePath,EnumFileDetails details)
 		{
-			GUILayout.BeginHorizontal();
+			GUILayout.BeginHorizontal("box",GUILayout.ExpandHeight(false));
 
 			GUILayout.Label(details.nameSpace+"."+details.enumName);
 
@@ -313,17 +365,26 @@ namespace [NAMESPACE]
 		
 		public void Initialize()
 		{
+			Debug.Log("Init");
 			Instance = this;
 			
 			InitWindowTitle();
 			position =  new Rect(120,120,300,292);
 			// initial fixed size
 			minSize = new Vector2(300, 292);
+
+
 		}
 		
 		public void InitWindowTitle()
 		{
 			title = "Enum Creator";
+		}
+
+		protected virtual void OnEnable()
+		{
+			Debug.Log("OnEnable");
+			_list = ClassFileFinder.FindEnumFiles();
 		}
 		
 		
