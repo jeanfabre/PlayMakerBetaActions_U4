@@ -1,4 +1,5 @@
-﻿
+﻿// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
+
 using System;
 using System.IO;
 using System.Collections;
@@ -9,98 +10,24 @@ using UnityEditor;
 using UnityEngine;
 
 using HutongGames.PlayMakerEditorUtils;
-using HutongGames.PlayMaker.Utils.Enum;
 
 using Rotorz.ReorderableList;
 
 namespace HutongGames.PlayMakerEditor
 {
 	public class EnumCreatorWizard : EditorWindow
-	{
-		
-	
-		#region Logic 
+	{ 
 
-		static string Template_MainStructure = @"// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
-// DO NOT EDIT, THIS CONTENT IS AUTOMATICALLY GENERATED
-// [TAG]
-// Please use PlayMaker Enum Creator Wizard to edit this enum definition
-
-namespace [NAMESPACE]
-{
-	public enum [ENUM_NAME]
-	{
-[ENUM_ENTRIES]		
-	}
-}
-";
-
-		static string Template_EnumEntry = "\t\t{0}{1}";
-
-		[Serializable]
-		public class EnumDefinition
-		{
-			public string NameSpace = "Net.FabreJean";
-			public string Name = "MyEnum";
-			public string FolderPath = "PlayMaker Custom Scripts/";
-			public List<string> entries = new List<string>();
-
-			public string ScriptLiteral ="";
-		}
-
-		public EnumDefinition currentEnum = new EnumDefinition();
-
-		/// <summary>
-		/// Create a new script featuring the new enum.
-		/// </summary>
-		void DoCreateEnum()
-		{
-			BuildScriptLiteral();
-		
-			string fileName = currentEnum.Name+".cs";
-			string outputPath = Path.Combine(Application.dataPath, currentEnum.FolderPath);
+		EnumCreator enumCreator = new EnumCreator();
 
 
-			// Ensure that this path actually exists.
-			if (!Directory.Exists(outputPath))
-				Directory.CreateDirectory(outputPath);
-
-
-			string filePath = Path.Combine(outputPath,fileName);
-			File.WriteAllText(filePath, currentEnum.ScriptLiteral);
-			AssetDatabase.Refresh();
-		}
-
-
-		void BuildScriptLiteral()
-		{
-			string scriptLiteral = Template_MainStructure;
-
-			scriptLiteral = Template_MainStructure.Replace("[TAG]","["+"PLAYMAKER_ENUM]"); // we recompose the tag to avoid detection of this very script
-			scriptLiteral = Template_MainStructure.Replace("[NAMESPACE]",currentEnum.NameSpace);
-		
-			scriptLiteral = scriptLiteral.Replace("[ENUM_NAME]",currentEnum.Name);
-	
-			string _entriesLiteral = "";
-			for(int i=0;i<currentEnum.entries.Count;i++)
-			{
-				_entriesLiteral += string.Format(Template_EnumEntry,currentEnum.entries[i],"");
-				if (i+1<currentEnum.entries.Count)
-				{
-					_entriesLiteral += ",\r\n";
-				}
-
-			}
-			scriptLiteral = scriptLiteral.Replace("[ENUM_ENTRIES]",_entriesLiteral);
-
-			currentEnum.ScriptLiteral = scriptLiteral;
-		}
+		public EnumCreator.EnumDefinition currentEnum = new EnumCreator.EnumDefinition();
 
 		void StartEditingEnum(EnumFileDetails enumDetails)
 		{
 			_sourceDetails = enumDetails;
 
-			currentEnum = new EnumDefinition();
+			currentEnum = new EnumCreator.EnumDefinition();
 
 			// nameSpace
 			currentEnum.NameSpace = enumDetails.nameSpace;
@@ -127,8 +54,6 @@ namespace [NAMESPACE]
 			GUI.FocusControl(_unfocusControlName);
 
 		}
-
-		#endregion Logic
 
 		#region UI
 
@@ -277,33 +202,68 @@ namespace [NAMESPACE]
 
 		void OnGUI_DoEnumDefinitionForm()
 		{
-
+			Color _orig = Color.clear;
 			ReBuildPreview = false;
 
-			GUILayout.Label("Project Folder:");
+			// FOLDER
+			_orig = GUI.color;
+			if (!currentEnum.FolderPathValidation.success)
+			{
+				GUI.color = Color.red;
+			}
+			GUILayout.Label("Project Folder: <color=#B20000><b>"+currentEnum.FolderPathValidation.message+"</b></color>");
 			currentEnum.FolderPath = GUILayout.TextField(currentEnum.FolderPath);
 
-			GUILayout.Label("NameSpace:");
-		
+
+			// NAMESPACE
+			_orig = GUI.color;
+			if (!currentEnum.NameSpaceValidation.success)
+			{
+				GUI.color = Color.red;
+			}
+			GUILayout.Label("NameSpace: <color=#B20000><b>"+currentEnum.NameSpaceValidation.message+"</b></color>");
 			string _nameSpace = GUILayout.TextField(currentEnum.NameSpace);
+			GUI.color = _orig;
 			if (!string.Equals(_nameSpace,currentEnum.NameSpace))
 			{
 				currentEnum.NameSpace = _nameSpace;
 				ReBuildPreview = true;
 			}
 
-			GUILayout.Label("Enum Name:");
+			// NAME
+			_orig = GUI.color;
+			if (!currentEnum.NameValidation.success)
+			{
+				GUI.color = Color.red;
+			}
+			GUILayout.Label("Enum Name: <color=#B20000><b>"+currentEnum.NameValidation.message+"</b></color>");
 			string _name = GUILayout.TextField(currentEnum.Name);
+			GUI.color = _orig;
 			if (!string.Equals(_name,currentEnum.Name))
 			{
 				currentEnum.Name = _name;
 				ReBuildPreview = true;
 			}
 
+			// ENTRIES
 
-			ReorderableListGUI.Title("Enum Entries");
+			int count = currentEnum.entries.Count;
+
+			List<string> _origEntries = new List<string>(currentEnum.entries);
+			ReorderableListGUI.Title("Enum Entries:  <color=#B20000><b>"+currentEnum.EntriesValidation.message+"</b></color>");
 			ReorderableListGUI.ListField(currentEnum.entries,DrawListItem);
+
+			if (currentEnum.entries.Count != count || _origEntries != currentEnum.entries)
+			{
+				ReBuildPreview = true;
+			}
+
 			FsmEditorGUILayout.Divider();
+
+			if (!currentEnum.DefinitionValidation.success)
+			{
+				GUILayout.Label("<color=#B20000><b>"+currentEnum.DefinitionValidation.message+"</b></color>");
+			}
 
 			GUILayout.BeginHorizontal();
 
@@ -314,21 +274,35 @@ namespace [NAMESPACE]
 
 				GUILayout.Space(50);
 
+			if (currentEnum.DefinitionValidation.success)
+			{
 				if (GUILayout.Button("Create")) // Label "Save Changes" when we detected that we are editing an existing enum
 				{
-					DoCreateEnum();
+					enumCreator.CreateEnum(currentEnum);
 				}
+			}else{
+			
+				Color _color = GUI.color;
+
+				_color.a = 0.5f;
+				GUI.color = _color;
+				GUILayout.Label("Create","Button");
+				_color.a = 1f;
+				GUI.color =_color;
+			}
 
 			GUILayout.EndHorizontal();
 
 			FsmEditorGUILayout.Divider();
 
 			GUILayout.Label("Code Source Preview:");
-			GUILayout.TextArea(currentEnum.ScriptLiteral);
+			GUILayout.TextArea(currentEnum.EnumLiteralPreview);
 
 			if (ReBuildPreview || string.IsNullOrEmpty(currentEnum.ScriptLiteral))
 			{
-				BuildScriptLiteral();
+				currentEnum.ValidateDefinition();
+
+				enumCreator.BuildScriptLiteral(currentEnum);
 				Repaint();
 			}
 
@@ -337,9 +311,31 @@ namespace [NAMESPACE]
 		private string DrawListItem(Rect position, string value) {
 			// Text fields do not like `null` values!
 			if (value == null)
+			{
 				value = "";
+				ReBuildPreview = true;
+			}
+				
 
+			Color _origColor = GUI.color;
+
+			bool hasValidationResult =  currentEnum.EntryValidations.ContainsKey(value);
+			if (hasValidationResult)
+			{
+				EnumCreator.ValidationResult _validationResult = currentEnum.EntryValidations[value];
+
+				if (!_validationResult.success)
+				{
+					GUI.color = Color.red;
+				}
+			}
+
+			// check if that index is validated
 			string _newValue = EditorGUI.TextField(position, value);
+
+			GUI.color = _origColor;
+
+
 			if (!string.Equals(_newValue,value))
 			{
 				ReBuildPreview = true;
@@ -373,7 +369,9 @@ namespace [NAMESPACE]
 			// initial fixed size
 			minSize = new Vector2(300, 292);
 
-
+			// set style ot use rich text.
+			GUIStyle labelStyle = GUI.skin.GetStyle("Label");
+			labelStyle.richText = true;
 		}
 		
 		public void InitWindowTitle()
