@@ -5,7 +5,10 @@
 
 namespace Net.FabreJean
 {
-	public enum MyEnum
+	public enum MyEnum123
 	{
+		sdf1,
+		sdf,
+		sdfs		
 	}
 }

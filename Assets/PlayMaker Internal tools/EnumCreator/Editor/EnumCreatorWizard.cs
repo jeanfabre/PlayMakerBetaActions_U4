@@ -18,6 +18,9 @@ namespace HutongGames.PlayMakerEditor
 	public class EnumCreatorWizard : EditorWindow
 	{ 
 
+		static readonly string __EnumListFoldOutPrefKey__   = "EnumCreatorWizard:EnumListFoldOut";
+		static readonly string __CodeSourceFoldOutPrefKey__ = "EnumCreatorWizard:CodeSourceFoldOut";
+
 		EnumCreator enumCreator = new EnumCreator();
 
 
@@ -61,9 +64,18 @@ namespace HutongGames.PlayMakerEditor
 
 		static string _unfocusControlName ="Unfocus";
 
+		GUIStyle labelStyle;
+
 		public void OnGUI()
 		{
 			FsmEditorStyles.Init();
+
+			// set style ot use rich text.
+			if (labelStyle==null)
+			{
+				labelStyle = GUI.skin.GetStyle("Label");
+				labelStyle.richText = true;
+			}
 
 			// unfocus invisible field
 			GUI.SetNextControlName(_unfocusControlName);
@@ -72,15 +84,6 @@ namespace HutongGames.PlayMakerEditor
 			FsmEditorGUILayout.ToolWindowLargeTitle(this, "Enum Creator");
 
 			OnGUI_HorizontalSplitView();
-			/*
-			OnGUI_ToolBar();
-
-			if (showForm)
-			{
-				OnGUI_DoEnumDefinitionForm();
-			}
-
-			*/
 		}
 
 
@@ -116,7 +119,7 @@ namespace HutongGames.PlayMakerEditor
 
 			FsmEditorGUILayout.Divider();
 
-			GUI.Box(cursorChangeRect,"","box");
+			GUI.Box(cursorChangeRect,"","label");
 		
 			FsmEditorGUILayout.Divider();
 
@@ -146,29 +149,40 @@ namespace HutongGames.PlayMakerEditor
 
 		}
 
+		bool enumListFoldOut;
+
 		[SerializeField]
 		Vector2 EnumListScrollPosition;
 
 		Dictionary<string,EnumFileDetails> _list;
+
 		void OnGUI_DoEditableEnumList(float height)
 		{
 
-			GUILayout.Label("Editable Enums");
-
-			//Rect _lastRect = GUILayoutUtility.GetLastRect();
-			// I am failing to get the proper height, because of the title and label above the scrollview... 
-			// so 61 is the top banner and the label above...
-			EnumListScrollPosition = GUILayout.BeginScrollView(EnumListScrollPosition,GUILayout.Height(height-61));
-
-			if (_list!=null)
+			bool newEnumListFoldOut = EditorGUILayout.Foldout(enumListFoldOut,"Editable Enums in this project ("+_list.Count+")");
+			if ( newEnumListFoldOut!=enumListFoldOut)
 			{
-				foreach(KeyValuePair<string,EnumFileDetails> i in _list)
-				{
-					OnGUI_DoEditableEnumItem(i.Key,i.Value);
-				}
+				enumListFoldOut = newEnumListFoldOut;
+				EditorPrefs.SetBool(__EnumListFoldOutPrefKey__,newEnumListFoldOut);
 			}
 
-			GUILayout.EndScrollView();
+			if (enumListFoldOut)
+			{
+				//Rect _lastRect = GUILayoutUtility.GetLastRect();
+				// I am failing to get the proper height, because of the title and label above the scrollview... 
+				// so 61 is the top banner and the label above...
+				EnumListScrollPosition = GUILayout.BeginScrollView(EnumListScrollPosition,GUILayout.Height(height-61));
+
+				if (_list!=null)
+				{
+					foreach(KeyValuePair<string,EnumFileDetails> i in _list)
+					{
+						OnGUI_DoEditableEnumItem(i.Key,i.Value);
+					}
+				}
+
+				GUILayout.EndScrollView();
+			}
 		}
 
 		EnumFileDetails _sourceDetails;
@@ -200,6 +214,9 @@ namespace HutongGames.PlayMakerEditor
 
 		bool ReBuildPreview;
 
+		bool sourcePreviewFoldout;
+		Vector2 sourcePreviewScrollPos;
+
 		void OnGUI_DoEnumDefinitionForm()
 		{
 			Color _orig = Color.clear;
@@ -209,11 +226,11 @@ namespace HutongGames.PlayMakerEditor
 			_orig = GUI.color;
 			if (!currentEnum.FolderPathValidation.success)
 			{
-				GUI.color = Color.red;
+				GUI.color = new Color(255,165,0);
 			}
-			GUILayout.Label("Project Folder: <color=#B20000><b>"+currentEnum.FolderPathValidation.message+"</b></color>");
+			GUILayout.Label("Project Folder: <color=#ffa500><b>"+currentEnum.FolderPathValidation.message+"</b></color>");
 			currentEnum.FolderPath = GUILayout.TextField(currentEnum.FolderPath);
-
+			GUI.color = _orig;
 
 			// NAMESPACE
 			_orig = GUI.color;
@@ -293,10 +310,24 @@ namespace HutongGames.PlayMakerEditor
 
 			GUILayout.EndHorizontal();
 
+		
 			FsmEditorGUILayout.Divider();
 
-			GUILayout.Label("Code Source Preview:");
-			GUILayout.TextArea(currentEnum.EnumLiteralPreview);
+			GUILayout.FlexibleSpace();
+
+			bool newSourcePreviewFoldout =	EditorGUILayout.Foldout(sourcePreviewFoldout,"Code Source Preview:");
+			if (newSourcePreviewFoldout!=sourcePreviewFoldout)
+			{
+				sourcePreviewFoldout = newSourcePreviewFoldout;
+				EditorPrefs.SetBool(__CodeSourceFoldOutPrefKey__,sourcePreviewFoldout);
+			}
+
+			if(sourcePreviewFoldout)
+			{
+				sourcePreviewScrollPos= GUILayout.BeginScrollView(sourcePreviewScrollPos);
+					GUILayout.TextArea(currentEnum.EnumLiteralPreview);
+				GUILayout.EndScrollView();
+			}
 
 			if (ReBuildPreview || string.IsNullOrEmpty(currentEnum.ScriptLiteral))
 			{
@@ -305,7 +336,6 @@ namespace HutongGames.PlayMakerEditor
 				enumCreator.BuildScriptLiteral(currentEnum);
 				Repaint();
 			}
-
 		}
 
 		private string DrawListItem(Rect position, string value) {
@@ -369,9 +399,7 @@ namespace HutongGames.PlayMakerEditor
 			// initial fixed size
 			minSize = new Vector2(300, 292);
 
-			// set style ot use rich text.
-			GUIStyle labelStyle = GUI.skin.GetStyle("Label");
-			labelStyle.richText = true;
+
 		}
 		
 		public void InitWindowTitle()
@@ -379,10 +407,14 @@ namespace HutongGames.PlayMakerEditor
 			title = "Enum Creator";
 		}
 
+
 		protected virtual void OnEnable()
 		{
 			Debug.Log("OnEnable");
 			_list = ClassFileFinder.FindEnumFiles();
+
+			enumListFoldOut = EditorPrefs.GetBool(__EnumListFoldOutPrefKey__,false);
+			sourcePreviewFoldout = EditorPrefs.GetBool(__EnumListFoldOutPrefKey__,false);
 		}
 		
 		

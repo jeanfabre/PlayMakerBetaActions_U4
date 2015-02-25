@@ -107,6 +107,7 @@ namespace HutongGames.PlayMakerEditor
 
 			private readonly Regex doubleDot = new Regex("\\.\\.");
 			private readonly Regex FolderPathRegex =  new Regex("^([a-zA-Z0-9][^*/><?\"|:]*)$");
+			//private readonly Regex FolderNameRegex = new Regex("[" + Regex.Escape(Path.GetInvalidPathChars) + "]");
 			private readonly CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
 
 			public ValidationResult ValidateNameSpace()
@@ -148,6 +149,8 @@ namespace HutongGames.PlayMakerEditor
 				return ValidationResult.ValidResult();
 			}
 
+
+
 			public ValidationResult ValidateFolderPath()
 			{
 				// we accept not folder path, meaning it will be at the root of the assets.
@@ -155,11 +158,20 @@ namespace HutongGames.PlayMakerEditor
 				{
 					return ValidationResult.ValidResult();
 				}
-				if (! Uri.IsWellFormedUriString(FolderPath,UriKind.Relative))
-				{
-					return new ValidationResult(false, "FolderPath is not well formed. Expect a relative Uri path");
-				}
+				string outputPath = Path.Combine(Application.dataPath, FolderPath);
 
+
+				var inputs = (FolderPath as string).Split('/');
+				foreach (var item in inputs)
+				{
+					/*
+					if (FolderNameRegex.IsMatch(item))
+					{
+						return new ValidationResult(false, string.Format("Folder '{0}' is invalid.", item));
+					}
+					*/
+				}
+			
 				return ValidationResult.ValidResult();
 			}
 
@@ -228,9 +240,9 @@ namespace HutongGames.PlayMakerEditor
 [ENUM_STRUCTURE]";
 
 		static string Template_Header = @"// (c) Copyright HutongGames, LLC 2010-[YEAR]. All rights reserved.
-// DO NOT EDIT, THIS CONTENT IS AUTOMATICALLY GENERATED
+// THIS CONTENT IS AUTOMATICALLY GENERATED.
 // [TAG]
-// Please use PlayMaker Enum Creator Wizard to edit this enum definition";
+// It is recommanded to use PlayMaker Enum Creator Wizard to edit this enum definition. But you can perfectly edit this script directly";
 
 		static string Template_EnumStructure = @"namespace [NAMESPACE]
 {
