@@ -116,6 +116,7 @@ namespace HutongGames.PlayMakerEditor
 
 				cursorChangeRect = new Rect(0,currentScrollViewHeight,this.position.width,5f);
 			}
+			cursorChangeRect.height = 5f;
 
 			FsmEditorGUILayout.Divider();
 
@@ -158,7 +159,7 @@ namespace HutongGames.PlayMakerEditor
 
 		void OnGUI_DoEditableEnumList(float height)
 		{
-
+			// DON'T ADD ANYTHING HERE, the heightis hardcoded... see tofix note below
 			bool newEnumListFoldOut = EditorGUILayout.Foldout(enumListFoldOut,"Editable Enums in this project ("+_list.Count+")");
 			if ( newEnumListFoldOut!=enumListFoldOut)
 			{
@@ -169,7 +170,7 @@ namespace HutongGames.PlayMakerEditor
 			if (enumListFoldOut)
 			{
 				//Rect _lastRect = GUILayoutUtility.GetLastRect();
-				// I am failing to get the proper height, because of the title and label above the scrollview... 
+				//TOFIX: I am failing to get the proper height, because of the title and label above the scrollview... 
 				// so 61 is the top banner and the label above...
 				EnumListScrollPosition = GUILayout.BeginScrollView(EnumListScrollPosition,GUILayout.Height(height-61));
 
