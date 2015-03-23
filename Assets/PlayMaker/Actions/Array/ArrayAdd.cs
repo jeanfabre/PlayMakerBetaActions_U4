@@ -33,6 +33,7 @@ namespace HutongGames.PlayMaker.Actions
         private void DoAddValue()
         {
             array.Resize(array.Length + 1);
+            value.UpdateValue();
             array.Set(array.Length - 1, value.GetValue());
         }
 

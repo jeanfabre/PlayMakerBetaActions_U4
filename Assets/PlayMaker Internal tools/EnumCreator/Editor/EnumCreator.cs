@@ -58,6 +58,13 @@ namespace HutongGames.PlayMakerEditor
 			/// </summary>
 			public List<string> entries = new List<string>();
 
+			/// <summary>
+			/// The full filePath of this definition.
+			/// deduced property or injected property 
+			/// </summary>
+			public string filePath = "";
+
+			public string directoryPath ="";
 
 			/// <summary>
 			/// The Enum literal. it's only use for preview
@@ -71,6 +78,15 @@ namespace HutongGames.PlayMakerEditor
 
 			#endregion
 
+
+			public void UpdateFilePath()
+			{
+				
+				string fileName = Name+".cs";
+				directoryPath = Path.Combine(Application.dataPath, FolderPath);
+
+				filePath = Path.Combine(directoryPath,fileName);
+			}
 			#region Validation
 
 			public ValidationResult DefinitionValidation	= ValidationResult.ValidResult();
@@ -261,18 +277,15 @@ namespace HutongGames.PlayMakerEditor
 		public void CreateEnum(EnumDefinition enumDefinition)
 		{
 			BuildScriptLiteral(enumDefinition);
-			
-			string fileName = enumDefinition.Name+".cs";
-			string outputPath = Path.Combine(Application.dataPath, enumDefinition.FolderPath);
-			
-			
+
+			enumDefinition.UpdateFilePath();
+
 			// Ensure that this path actually exists.
-			if (!Directory.Exists(outputPath))
-				Directory.CreateDirectory(outputPath);
-			
-			
-			string filePath = Path.Combine(outputPath,fileName);
-			File.WriteAllText(filePath, enumDefinition.ScriptLiteral);
+			if (!Directory.Exists(enumDefinition.directoryPath))
+				Directory.CreateDirectory(enumDefinition.directoryPath);
+
+			File.WriteAllText(enumDefinition.filePath, enumDefinition.ScriptLiteral);
+
 			AssetDatabase.Refresh();
 		}
 		
