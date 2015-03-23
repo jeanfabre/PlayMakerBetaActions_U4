@@ -1,4 +1,13 @@
 ﻿// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
+/*--- __ECO__ __ACTION__ __BETA__
+EcoMetaStart
+{
+"script dependancies":[
+						"Assets/PlayMaker Custom Actions/uGui/Editor/uGuiGroupLayoutUpdateContentCustomEditor.cs"
+					]
+}
+EcoMetaEnd
+---*/
 
 using UnityEngine;
 using System;
@@ -12,6 +21,8 @@ namespace HutongGames.PlayMaker.Actions
 	[Tooltip("Manage GameObjects within a GroupLayout to match FsmArray content")]
 	public class uGuiGroupLayoutUpdateContent : FsmStateAction
 	{
+		// I use this to avoid the error that destroyEvent and updateEvent are not used in this fsm
+		public FsmEventTarget eventTarget;
 
 		[RequiredField]
 		[CheckForComponent(typeof(UnityEngine.UI.LayoutGroup))]
@@ -43,6 +54,9 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void Reset()
 		{
+			eventTarget = new FsmEventTarget();
+			eventTarget.target = FsmEventTarget.EventTarget.BroadcastAll;
+
 			content = null;
 			prefab = null;
 			destroyEvent = null;
