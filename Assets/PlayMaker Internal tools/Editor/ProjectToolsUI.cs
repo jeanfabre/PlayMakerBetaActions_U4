@@ -47,6 +47,13 @@ namespace HutongGames.PlayMakerEditor
 				{
 					DoResaveAllFsmsInBuild();
 				}
+
+				if ( GUILayout.Button("Introspect All Fsm In Builds") )
+				{
+					DoIntrospectAllFsmsInBuild();
+				}
+
+
 			}else{
 				OnGUI_DoToolFeedback();
 			}
@@ -56,6 +63,11 @@ namespace HutongGames.PlayMakerEditor
 		public void DoResaveAllFsmsInBuild()
 		{
 			EditorCoroutine.start(ProjectToolsTest.DoReSaveAllFSMsInBuild());
+		}
+
+		public void DoIntrospectAllFsmsInBuild()
+		{
+			EditorCoroutine.start(IntrospectionRoutines.DoIntrospectAllFSMsInBuild());
 		}
 
 		void OnGUI_DoToolFeedback()
@@ -120,7 +132,7 @@ namespace HutongGames.PlayMakerEditor
 		#region Window Management
 
 		// Add menu named "My Window" to the Window menu
-		[MenuItem (ProjectToolsTest.MenuRoot + "Tools/Wizard")]
+		[MenuItem (ProjectToolsTest.MenuRoot + "Tools/Save Wizard")]
 		static public void Init () {
 			
 			// Get existing open window or if none, make a new one:

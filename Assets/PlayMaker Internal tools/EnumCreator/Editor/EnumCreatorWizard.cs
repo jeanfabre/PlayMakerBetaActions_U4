@@ -13,7 +13,7 @@ using HutongGames.PlayMakerEditorUtils;
 
 using Rotorz.ReorderableList;
 
-namespace HutongGames.PlayMakerEditor
+namespace HutongGames.PlayMakerEditor.Ecosystem.Utils
 {
 	public class EnumCreatorWizard : EditorWindow
 	{ 
