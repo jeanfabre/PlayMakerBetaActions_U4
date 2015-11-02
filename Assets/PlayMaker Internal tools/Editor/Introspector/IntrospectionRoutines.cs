@@ -12,6 +12,7 @@ using HutongGames.PlayMaker;
 
 using HutongGames.PlayMakerEditorUtils;
 
+
 namespace HutongGames.PlayMakerEditor
 {
 	public class IntrospectionRoutines
@@ -59,15 +60,16 @@ namespace HutongGames.PlayMakerEditor
 			yield return null;
 
 			Debug.Log("-- start IntrospectAllLoadedFSMs ");
-			IntrospectAllLoadedFSMs();
+			IntrospectAllLoadedFSMs(null);
 
 			yield return null;
 
 			Debug.Log("-- start IntrospectAllTemplates ");
 
-			IntrospectAllTemplates();
+			//IntrospectAllScenes();
 
 			yield return null;
+
 
 			Debug.Log("------ End DoIntrospectAllLoadedFSMs --------- ");
 
@@ -93,41 +95,33 @@ namespace HutongGames.PlayMakerEditor
 			feedback.LogAction("-- init xml done ");
 
 
-			yield return EditorCoroutine.start(IntrospectGlobalVariables());
+			yield return EditorCoroutine.start(IntrospectUnity());
 
-			yield return EditorCoroutine.start(IntrospectGlobalEvents());
+			yield return EditorCoroutine.start(IntrospectProject());
 
-			/*
-			EditorCoroutine _IntrospectGlobalVariables_cr = EditorCoroutine.startManual(IntrospectGlobalVariables());
-			while (_IntrospectGlobalVariables_cr.routine.MoveNext()) {
-				yield return _IntrospectGlobalVariables_cr.routine.Current;
-			}
-			*/
 
-			/*
-			yield return null;
-
-			EditorCoroutine _LoadPrefabsWithPlayMakerFSMComponents_cr = EditorCoroutine.startManual(LoadPrefabsWithPlayMakerFSMComponents());
-			while (_LoadPrefabsWithPlayMakerFSMComponents_cr.routine.MoveNext()) {
-				yield return _LoadPrefabsWithPlayMakerFSMComponents_cr.routine.Current;
-			}
-			*/
-
-			yield return null;
-
-			EditorCoroutine _IntrospectAllFsminBuild_cr = EditorCoroutine.startManual(IntrospectAllFSMsInBuild());
-			while (_IntrospectAllFsminBuild_cr.routine.MoveNext()) {
-				yield return _IntrospectAllFsminBuild_cr.routine.Current;
+			EditorCoroutine _IntrospectPlayMaker_cr = EditorCoroutine.startManual(IntrospectPlayMaker());
+			while (_IntrospectPlayMaker_cr.routine.MoveNext()) {
+				yield return _IntrospectPlayMaker_cr.routine.Current;
 			}
 
 			yield return null;
-
-			EditorCoroutine _IntrospectAllTemplates_cr = EditorCoroutine.startManual(IntrospectAllTemplates());
-			while (_IntrospectAllTemplates_cr.routine.MoveNext()) {
-				yield return _IntrospectAllTemplates_cr.routine.Current;
+			
+			EditorCoroutine _IntrospectAllScenes_cr = EditorCoroutine.startManual(IntrospectAllScenes());
+			while (_IntrospectAllScenes_cr.routine.MoveNext()) {
+				yield return _IntrospectAllScenes_cr.routine.Current;
 			}
 			
 			yield return null;
+
+			Debug.Log("--StoreEnumReferences");
+
+			XmlElement _eventsElement = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"Events");
+
+			IntrospectionXmlUtils.StoreEnumReferences(_eventsElement);
+			
+			yield return null;
+
 
 			feedback.LogAction("-- save xml");
 			IntrospectionXmlProxy.SaveInFile();
@@ -144,14 +138,14 @@ namespace HutongGames.PlayMakerEditor
 			FindAllScenes();
 		}
 
-		private static IEnumerator IntrospectGlobalVariables()
+		private static IEnumerator IntrospectGlobalVariables(XmlElement parentElement)
 		{
 			feedback.StartProcedure("Introspect Global Variables");
 
 			// create the Global Variables node:
 
 
-			XmlElement _gvElement = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"GlobalVariables");
+			XmlElement _gvElement = IntrospectionXmlProxy.AddElement(parentElement,"GlobalVariables");
 
 			foreach(NamedVariable _var in FsmVariables.GlobalVariables.GetAllNamedVariables())
 			{
@@ -197,11 +191,11 @@ namespace HutongGames.PlayMakerEditor
 		}
 
 
-		private static IEnumerator IntrospectGlobalEvents()
+		private static IEnumerator IntrospectGlobalEvents(XmlElement parentElement)
 		{
 			feedback.StartProcedure("Introspect Global Events");
 
-			XmlElement _geElement = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"GlobalEvents");
+			XmlElement _geElement = IntrospectionXmlProxy.AddElement(parentElement,"GlobalEvents");
 
 
 			foreach(FsmEvent _event in PlayMaker.FsmEvent.EventList)
@@ -236,34 +230,145 @@ namespace HutongGames.PlayMakerEditor
 		}
 
 
-		private static IEnumerator IntrospectAllTemplates()
+		private static IEnumerator IntrospectComputer()
 		{
-			feedback.StartProcedure("Introspect All Templates");
+			feedback.StartProcedure("Introspect Computer");
+			
+			XmlElement _element = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"Computer");
 
-			feedback.LogAction("Rebuild Fsm List");
+			IntrospectionXmlProxy.AddElement(_element,"OperatinSystem",  SystemInfo.operatingSystem );
+			IntrospectionXmlProxy.AddElement(_element,"SystemLanguage",Application.systemLanguage.ToString() );
 
-			FsmEditorUtility.BuildTemplateList();
+			yield return null;
+			
+			
+			feedback.EndProcedure("Introspect Computer");
+		}
+
+		private static IEnumerator IntrospectUnity()
+		{
+			feedback.StartProcedure("Introspect Unity");
+			
+			XmlElement _element = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"Unity");
+			
+
+			IntrospectionXmlProxy.AddElement(_element,"Version",  Application.unityVersion );
+
+			if (Application.HasProLicense())
+			{
+				IntrospectionXmlProxy.AddElement(_element,"HasPro",  "true" );
+			}
+
+			yield return null;
+			
+			
+			feedback.EndProcedure("Introspect Unity");
+		}
+
+		private static IEnumerator IntrospectProject()
+		{
+			feedback.StartProcedure("Introspect Project");
+			
+			XmlElement _element = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"Project");
+			
+
+			IntrospectionXmlProxy.AddElement(_element,"Platform",Application.platform.ToString() );
+			if (Application.internetReachability != NetworkReachability.NotReachable)
+			{
+				IntrospectionXmlProxy.AddElement(_element,"InternetReachability",Application.internetReachability.ToString());
+			}
+			if (!string.IsNullOrEmpty(Application.loadedLevelName))
+			{
+				IntrospectionXmlProxy.AddElement(_element,"LoadedLevelName",Application.loadedLevelName );
+			}
+			IntrospectionXmlProxy.AddElement(_element,"TargetFrameRate",Application.targetFrameRate.ToString() );
+			if (Application.webSecurityEnabled)
+			{
+				IntrospectionXmlProxy.AddElement(_element,"WebSecurityEnabled","true");
+			}
+
+			yield return null;
+			
+			
+			feedback.EndProcedure("Introspect Project");
+		}
+
+		private static IEnumerator IntrospectPlayMaker()
+		{
+			feedback.StartProcedure("Introspect PlayMaker");
+
+		 XmlElement _PlayMakerElement =	IntrospectionXmlUtils.IntrospectPlayMaker(IntrospectionXmlProxy.XmlDocument.DocumentElement);
+
+			EditorCoroutine _IntrospectGlobalVariables_cr = EditorCoroutine.startManual(IntrospectGlobalVariables(_PlayMakerElement));
+			while (_IntrospectGlobalVariables_cr.routine.MoveNext()) {
+				yield return _IntrospectGlobalVariables_cr.routine.Current;
+			}
+
+			EditorCoroutine _IntrospectGlobalEvents_cr = EditorCoroutine.startManual(IntrospectGlobalEvents(_PlayMakerElement));
+			while (_IntrospectGlobalEvents_cr.routine.MoveNext()) {
+				yield return _IntrospectGlobalEvents_cr.routine.Current;
+			}
 
 			yield return null;
 
-			foreach (var template in FsmEditorUtility.TemplateList)
+			feedback.EndProcedure("Introspect PlayMaker");
+		}
+
+		private static IEnumerator IntrospectAllScenes()
+		{
+			feedback.StartProcedure("Introspect All Scenes");
+
+			XmlElement _element = IntrospectionXmlProxy.AddElement(IntrospectionXmlProxy.XmlDocument.DocumentElement,"Scenes");
+
+			string[] _scenes = FindAllScenes();
+
+			yield return null;
+
+			foreach (string _scenePath in _scenes)
 			{
-				try
-				{
-					feedback.LogAction("Set Fsm Dirty"+ template.fsm.Name);
-					FsmEditor.SetFsmDirty(template.fsm, false);
-					feedback.LogAction("Re-save Template: " + template.name);
+				XmlElement _sceneElement =  IntrospectionXmlProxy.AddElement(_element,"Scene");
+				IntrospectionXmlProxy.AddElement(_sceneElement,"path",_scenePath);
+
+
+				feedback.LogAction("Open Scene: " + _scenePath);
+
+				try{
+					EditorApplication.OpenScene(_scenePath);
+
 				}catch(Exception e)
 				{
 					Debug.LogWarning("error : "+e.Message);
 				}
+
+				
+				// IntrospectAllLoadedFSMs
+				Debug.Log("Introspecting scene "+_scenePath);
+
+				yield return null;
+				
+				EditorCoroutine _IntrospectAllLoadedFSMs_cr = EditorCoroutine.startManual(IntrospectAllLoadedFSMs(_sceneElement));
+				while (_IntrospectAllLoadedFSMs_cr.routine.MoveNext()) {
+					yield return _IntrospectAllLoadedFSMs_cr.routine.Current;
+				}
+				
+				yield return null;
+				
+				
+				//SaveAllLoadedFSMs();
+
+				
+				EditorApplication.SaveScene();
+
+				yield return null;
+
+
 			}
 
-			feedback.EndProcedure("Introspect All Templates");
+			feedback.EndProcedure("Introspect All Scenes");
 
 		}
 		
-		private static IEnumerator IntrospectAllLoadedFSMs()
+		private static IEnumerator IntrospectAllLoadedFSMs(XmlElement ParentXmlElement)
 		{
 			feedback.StartProcedure("Introspect All Loaded FSMs");
 
@@ -275,11 +380,40 @@ namespace HutongGames.PlayMakerEditor
 
 			foreach (var fsm in FsmEditor.FsmList)
 			{
-				//Debug.Log("Re-save FSM: " + FsmEditorUtility.GetFullFsmLabel(fsm));
-				//FsmEditor.SetFsmDirty(fsm, false);
+				feedback.LogAction("Introspect fsm: "+fsm.GameObjectName+"/"+fsm.Name);
 
-				feedback.LogAction("Save action for fsm: "+fsm.GameObjectName+"/"+fsm.Name);
+				Debug.Log("Re-save FSM: " + FsmEditorUtility.GetFullFsmLabel(fsm));
+				FsmEditor.SetFsmDirty(fsm, false);
+
 				FsmEditor.SaveActions(fsm);
+
+				IntrospectionXmlUtils.IntrospectFsm(fsm,ParentXmlElement);
+				/*
+				if (ParentXmlElement==null)
+				{
+					ParentXmlElement = IntrospectionXmlProxy.XmlDocument.DocumentElement;
+				}
+				XmlElement _element = IntrospectionXmlProxy.AddElement(ParentXmlElement,"Fsm");
+
+				IntrospectionXmlProxy.AddElement(_element,"Path",fsm.GameObject.transform.GetPath());
+
+				IntrospectionXmlProxy.AddElement(_element,"GameObjectName",fsm.GameObjectName);
+				IntrospectionXmlProxy.AddElement(_element,"Name",fsm.Name);
+
+				IntrospectionXmlProxy.AddElement(_element,"DataVersion",fsm.DataVersion.ToString());
+
+				IntrospectionXmlProxy.AddElementIfNotEmpty(_element,"Description",fsm.Description);
+				IntrospectionXmlProxy.AddElementIfNotEmpty(_element,"DocUrl",fsm.DocUrl);
+				IntrospectionXmlProxy.AddElementIfNotEmpty(_element,"Watermark",fsm.Watermark);
+
+
+				XmlElement _variablesElement =	IntrospectionXmlProxy.AddElement(_element,"Variables");
+
+			
+				// variables
+			 	IntrospectionXmlUtils.IntrospectFsmVariables(fsm,_variablesElement);
+*/
+
 				yield return null;
 			}
 
@@ -298,6 +432,7 @@ namespace HutongGames.PlayMakerEditor
 					EditorApplication.OpenScene(scene.path);
 					FsmEditor.RebuildFsmList();
 					// HERE WE INTROSPECT FURTHER
+
 					//SaveAllLoadedFSMs();
 					Debug.Log("Introspecting scene "+scene.path);
 
@@ -360,13 +495,15 @@ namespace HutongGames.PlayMakerEditor
 
 		
 		[Localizable(false)]
-		private static void FindAllScenes()
+		private static string[] FindAllScenes()
 		{
 			Debug.Log("Finding all scenes...");
 			
 			var searchDirectory = new DirectoryInfo(Application.dataPath);
 			var assetFiles = searchDirectory.GetFiles("*.unity", SearchOption.AllDirectories);
-			
+
+			string[] _scenes = new string[0];
+
 			foreach (var file in assetFiles)
 			{
 				var filePath = file.FullName.Replace(@"\", "/").Replace(Application.dataPath, "Assets");
@@ -378,9 +515,12 @@ namespace HutongGames.PlayMakerEditor
 				else if (obj.GetType() == typeof(Object))
 				{
 					Debug.Log(filePath);// + ": " + obj.GetType().FullName);
+					ArrayUtility.Add<string>(ref _scenes,filePath);
 				}
-				//var obj = AssetDatabase.
+			
 			}
+
+			return _scenes;
 		}
 
 

@@ -10,8 +10,6 @@ namespace HutongGames.PlayMakerEditor
 	public class IntrospectionXmlProxy  {
 
 
-
-
 		#region STATIC INTERFACE
 
 		static IntrospectionXmlProxy _instance;
@@ -26,9 +24,12 @@ namespace HutongGames.PlayMakerEditor
 			}
 		}
 
+
 		public static XmlDocument XmlDocument;
 
 		public static XmlElement XmlRoot;
+
+
 
 
 		public static IEnumerator Init()
@@ -39,6 +40,7 @@ namespace HutongGames.PlayMakerEditor
 			XmlRoot= XmlDocument.CreateElement( string.Empty, "root", string.Empty );
 			XmlDocument.AppendChild( XmlRoot );
 
+			IntrospectionXmlUtils.Init();
 			yield return null;
 		}
 
@@ -54,6 +56,106 @@ namespace HutongGames.PlayMakerEditor
 			XmlDocument.Save(_filePath);
 
 			return _projectPath;
+		}
+
+		public static XmlElement AddCdataElementIfNotEmpty(XmlElement parent,string name,string cdataText="")
+		{
+			if (string.IsNullOrEmpty(cdataText))
+			{
+				return null;
+			}
+
+			XmlCDataSection cdata  = parent.OwnerDocument.CreateCDataSection(cdataText);
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = cdata.OuterXml;
+			parent.AppendChild(_element);
+
+			return _element;
+		}
+
+
+		public static XmlElement AddElementIfNotEmpty(XmlElement parent,string name,bool variable)
+		{
+			if (!variable)
+			{
+				return null;
+			}
+
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = "true";
+			parent.AppendChild(_element);
+			
+			return _element;
+		}
+
+		public static XmlElement AddElementIfValueDifferent(XmlElement parent,string name,bool variable,bool defaultValue)
+		{
+			if (variable == defaultValue)
+			{
+				return null;
+			}
+			
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = variable?"true":"false";
+			parent.AppendChild(_element);
+			
+			return _element;
+		}
+
+		public static XmlElement AddElementIfValueDifferent(XmlElement parent,string name,int variable,int defaultValue)
+		{
+			if (variable == defaultValue)
+			{
+				return null;
+			}
+			
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = variable.ToString();
+			parent.AppendChild(_element);
+			
+			return _element;
+		}
+
+		public static XmlElement AddElementIfValueDifferent(XmlElement parent,string name,string variable,string defaultValue)
+		{
+			if (string.Equals(variable,defaultValue))
+			{
+				return null;
+			}
+			
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = variable.ToString();
+			parent.AppendChild(_element);
+			
+			return _element;
+		}
+
+		public static XmlElement AddElementIfValueDifferent(XmlElement parent,string name,float variable,float defaultValue)
+		{
+			if (variable==defaultValue)
+			{
+				return null;
+			}
+			
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = variable.ToString();
+			parent.AppendChild(_element);
+			
+			return _element;
+		}
+
+		public static XmlElement AddElementIfNotEmpty(XmlElement parent,string name,string innerText = "")
+		{
+			if (string.IsNullOrEmpty(innerText))
+			{
+				return null;
+			}
+
+			XmlElement _element =  XmlDocument.CreateElement(name);
+			_element.InnerText = innerText;
+			parent.AppendChild(_element);
+			
+			return _element;
 		}
 
 
