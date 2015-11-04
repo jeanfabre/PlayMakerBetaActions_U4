@@ -375,9 +375,19 @@ namespace HutongGames.PlayMakerEditor
 			feedback.LogAction("Rebuild Fsm List");
 
 			FsmEditor.RebuildFsmList();
-
+		
 			yield return null;
 
+			foreach(PlayMakerFSM fsm in FsmEditor.FsmComponentList)
+			{
+				feedback.LogAction("Introspect PlayMakerFSM: "+fsm.gameObject.name+"/"+fsm.FsmName);
+
+				IntrospectionXmlUtils.IntrospectPlayMakerFSM(fsm,ParentXmlElement);
+				
+				yield return null;
+			}
+
+			/*
 			foreach (var fsm in FsmEditor.FsmList)
 			{
 				feedback.LogAction("Introspect fsm: "+fsm.GameObjectName+"/"+fsm.Name);
@@ -388,34 +398,10 @@ namespace HutongGames.PlayMakerEditor
 				FsmEditor.SaveActions(fsm);
 
 				IntrospectionXmlUtils.IntrospectFsm(fsm,ParentXmlElement);
-				/*
-				if (ParentXmlElement==null)
-				{
-					ParentXmlElement = IntrospectionXmlProxy.XmlDocument.DocumentElement;
-				}
-				XmlElement _element = IntrospectionXmlProxy.AddElement(ParentXmlElement,"Fsm");
-
-				IntrospectionXmlProxy.AddElement(_element,"Path",fsm.GameObject.transform.GetPath());
-
-				IntrospectionXmlProxy.AddElement(_element,"GameObjectName",fsm.GameObjectName);
-				IntrospectionXmlProxy.AddElement(_element,"Name",fsm.Name);
-
-				IntrospectionXmlProxy.AddElement(_element,"DataVersion",fsm.DataVersion.ToString());
-
-				IntrospectionXmlProxy.AddElementIfNotEmpty(_element,"Description",fsm.Description);
-				IntrospectionXmlProxy.AddElementIfNotEmpty(_element,"DocUrl",fsm.DocUrl);
-				IntrospectionXmlProxy.AddElementIfNotEmpty(_element,"Watermark",fsm.Watermark);
-
-
-				XmlElement _variablesElement =	IntrospectionXmlProxy.AddElement(_element,"Variables");
-
-			
-				// variables
-			 	IntrospectionXmlUtils.IntrospectFsmVariables(fsm,_variablesElement);
-*/
-
+	
 				yield return null;
-			}
+			}	
+			*/
 
 			feedback.EndProcedure("Introspect All Loaded FSMs");
 		}

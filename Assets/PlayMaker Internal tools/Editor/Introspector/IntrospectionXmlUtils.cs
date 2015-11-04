@@ -49,15 +49,36 @@ namespace HutongGames.PlayMakerEditor
 
 		public static XmlElement IntrospectPlayMaker(XmlElement parentElement)
 		{
+
 			XmlElement _PlayMakerElement = IntrospectionXmlProxy.AddElement(parentElement,"PlayMaker");
 
 			IntrospectionXmlProxy.AddElement(_PlayMakerElement,"Version",  Net.FabreJean.UnityEditor.Utils.GetPlayMakerVersion() );
 
+			// State Colors
+		
+
+
+
+			// Preferences
 			XmlElement _PrefsElement = IntrospectionXmlProxy.AddElement(_PlayMakerElement,"Preferences");
+
+			XmlElement _PrefColorsElement = IntrospectionXmlProxy.AddElement(_PrefsElement,"Colors");
+
+			for(int i=0;i<PlayMakerPrefs.ColorNames.Length;i++)
+			{
+				string _colorName = PlayMakerPrefs.ColorNames[i];
+				if (string.IsNullOrEmpty(_colorName)) continue;
+
+				XmlElement _colorElement = IntrospectionXmlProxy.AddElement(_PrefsElement,"Color");
+
+				IntrospectionXmlProxy.AddElement(_PrefsElement,"Index",i.ToString());
+				IntrospectionXmlProxy.AddElement(_PrefsElement,"Name",_colorName);
+				IntrospectionXmlProxy.AddElement(_PrefsElement,"Value",PlayMakerPrefs.Colors[i].ToString());
+			}
 
 			foreach(KeyValuePair<String,System.Object> _pref in PreferencesLUT)
 			{
-				Debug.Log("Key"+_pref.Key+" "+_pref.Value.GetType().FullName+" "+_pref.Value);
+ 				//Debug.Log("Key"+_pref.Key+" "+_pref.Value.GetType().FullName+" "+_pref.Value);
 
 				switch(_pref.Value.GetType().FullName)
 				{
@@ -85,19 +106,28 @@ namespace HutongGames.PlayMakerEditor
 		}
 
 
-		public static void IntrospectFsm(Fsm fsm,XmlElement parentElement)
+
+		public static void IntrospectPlayMakerFSM(PlayMakerFSM fsm,XmlElement parentElement)
 		{
 			XmlElement _fsmElement = IntrospectionXmlProxy.AddElement(parentElement,"Fsm");
 
-			IntrospectionXmlUtils.IntrospectFsmComponent(fsm,_fsmElement);
+		
 
-			IntrospectFsmTransitions(fsm.GlobalTransitions,"GlobalTransitions",_fsmElement);
+			IntrospectionXmlUtils.IntrospectFsmComponent(fsm.Fsm,_fsmElement);
 
-			IntrospectionXmlProxy.AddElement(_fsmElement,"StartState",fsm.StartState);
+			IntrospectFsmTransitions(fsm.FsmGlobalTransitions,"GlobalTransitions",_fsmElement);
 
-			IntrospectionXmlUtils.IntrospectFsmStates(fsm,_fsmElement);
+			if (fsm.UsesTemplate)
+			{
+				IntrospectionXmlProxy.AddElement(_fsmElement,"Template",fsm.FsmTemplate.name);
 
-			IntrospectionXmlUtils.IntrospectFsmVariables(fsm,_fsmElement);
+			}
+			IntrospectionXmlProxy.AddElement(_fsmElement,"StartState",fsm.Fsm.StartState);
+
+			IntrospectionXmlUtils.IntrospectFsmStates(fsm.Fsm,_fsmElement);
+			
+			IntrospectionXmlUtils.IntrospectFsmVariables(FsmVariable.GetFsmVariableList(fsm),_fsmElement);
+
 		}
 
 
@@ -227,35 +257,33 @@ namespace HutongGames.PlayMakerEditor
 		}
 
 
-		public static void IntrospectFsmVariables(Fsm fsm,XmlElement parentElement)
+		public static void IntrospectFsmVariables(List<FsmVariable> fsmVariablesList,XmlElement parentElement)
 		{
 
 			XmlElement _variablesElement = IntrospectionXmlProxy.AddElement(parentElement,"Variables");
 
-			foreach(NamedVariable _variable in fsm.Variables.GetAllNamedVariables() )
+			foreach(FsmVariable _variable in fsmVariablesList )
 			{
 
 				XmlElement _variableElement = IntrospectionXmlProxy.AddElement(_variablesElement,"Variable");
 				
 				IntrospectionXmlProxy.AddElement(_variableElement,"Name",_variable.Name);
-				IntrospectionXmlProxy.AddElement(_variableElement,"DisplayName",_variable.GetDisplayName());
-				if (_variable.NetworkSync)
-				{
-					IntrospectionXmlProxy.AddElement(_variableElement,"NetworkSynch","true");
-				}
-				if (_variable.ShowInInspector)
-				{
-					IntrospectionXmlProxy.AddElement(_variableElement,"ShowInInspector","true");
-				}
+				IntrospectionXmlProxy.AddElementIfNotEmpty(_variableElement,"Category",_variable.GetCategory());
+
+
+				IntrospectionXmlProxy.AddElementIfValueDifferent (_variableElement,"NetworkSynch",_variable.NetworkSync,false);
+				IntrospectionXmlProxy.AddElementIfValueDifferent(_variableElement,"ShowInInspector",_variable.ShowInInspector,false);
 				IntrospectionXmlProxy.AddCdataElementIfNotEmpty(_variableElement,"Tooltip",_variable.Tooltip);
 
-				IntrospectionXmlProxy.AddElement(_variableElement,"VariableType",_variable.VariableType.ToString());
+				IntrospectionXmlProxy.AddElement(_variableElement,"VariableType",_variable.Type.ToString());
 
-				switch(_variable.VariableType)
+				NamedVariable _namedVar = _variable.NamedVar;
+
+				switch(_namedVar.VariableType)
 				{
 				case VariableType.Array:
 
-					FsmArray _fsmArray = (FsmArray)_variable;
+					FsmArray _fsmArray = (FsmArray)_namedVar;
 
 					IntrospectionXmlProxy.AddElement(_variableElement,"ElementType",_fsmArray.ElementType.ToString());
 					IntrospectionXmlProxy.AddElement(_variableElement,"Length",_fsmArray.Length.ToString());
@@ -272,7 +300,7 @@ namespace HutongGames.PlayMakerEditor
 					break;
 				case VariableType.Enum:
 					
-					FsmEnum _fsmEnum = (FsmEnum)_variable;
+					FsmEnum _fsmEnum = (FsmEnum)_namedVar;
 				
 					if (_fsmEnum.EnumType != typeof(None))
 					{
@@ -292,9 +320,9 @@ namespace HutongGames.PlayMakerEditor
 					break;
 
 				default:
-					if (_variable.RawValue !=null)
+					if (_namedVar.RawValue !=null)
 					{
-						IntrospectionXmlProxy.AddElement(_variableElement,"Value",_variable.RawValue.ToString());
+						IntrospectionXmlProxy.AddElement(_variableElement,"Value",_namedVar.RawValue.ToString());
 					}
 					break;
 				}
