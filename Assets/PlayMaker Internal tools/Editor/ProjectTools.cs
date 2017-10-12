@@ -120,11 +120,13 @@ namespace HutongGames.PlayMakerEditor
 
 			feedback.LogAction("Rebuild Fsm List");
 
-			FsmEditorUtility.BuildTemplateList();
+			Templates.InitList();
+
+			//FsmEditorUtility.BuildTemplateList();
 
 			yield return null;
 
-			foreach (var template in FsmEditorUtility.TemplateList)
+			foreach (var template in Templates.List)
 			{
 				try
 				{

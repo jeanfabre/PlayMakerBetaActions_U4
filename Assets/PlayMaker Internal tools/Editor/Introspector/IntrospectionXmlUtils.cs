@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using HutongGames.PlayMaker;
+using HutongGames.PlayMakerEditor;
 
 namespace HutongGames.PlayMakerEditor
 {
@@ -54,11 +55,7 @@ namespace HutongGames.PlayMakerEditor
 
 			IntrospectionXmlProxy.AddElement(_PlayMakerElement,"Version",  Net.FabreJean.UnityEditor.Utils.GetPlayMakerVersion() );
 
-			// State Colors
 		
-
-
-
 			// Preferences
 			XmlElement _PrefsElement = IntrospectionXmlProxy.AddElement(_PlayMakerElement,"Preferences");
 
@@ -69,11 +66,11 @@ namespace HutongGames.PlayMakerEditor
 				string _colorName = PlayMakerPrefs.ColorNames[i];
 				if (string.IsNullOrEmpty(_colorName)) continue;
 
-				XmlElement _colorElement = IntrospectionXmlProxy.AddElement(_PrefsElement,"Color");
+				XmlElement _PrefColorElement = IntrospectionXmlProxy.AddElement(_PrefColorsElement,"Color");
 
-				IntrospectionXmlProxy.AddElement(_PrefsElement,"Index",i.ToString());
-				IntrospectionXmlProxy.AddElement(_PrefsElement,"Name",_colorName);
-				IntrospectionXmlProxy.AddElement(_PrefsElement,"Value",PlayMakerPrefs.Colors[i].ToString());
+				IntrospectionXmlProxy.AddElement(_PrefColorElement,"Index",i.ToString());
+				IntrospectionXmlProxy.AddElement(_PrefColorElement,"Name",_colorName);
+				IntrospectionXmlProxy.AddElement(_PrefColorElement,"Value",PlayMakerPrefs.Colors[i].ToString());
 			}
 
 			foreach(KeyValuePair<String,System.Object> _pref in PreferencesLUT)
@@ -410,8 +407,8 @@ namespace HutongGames.PlayMakerEditor
 			{"ShowActionPreview", true},
 			{"SelectedActionCategory", 0},
 			{"SelectFSMInGameView", true},
-			{"DebugLookAtColor", FsmEditorUtility.PackColorIntoInt(Color.gray)},
-			{"DebugRaycastColor", FsmEditorUtility.PackColorIntoInt(Color.gray)},
+			//{"DebugLookAtColor", FsmEditorSettings.PackColorIntoInt(Color.gray)},
+			//{"DebugRaycastColor", FsmEditorSettings.PackColorIntoInt(Color.gray)},
 			{"HideUnusedParams", false},
 			{"AutoAddPlayMakerGUI", true},
 			{"DimUnusedParameters", false},

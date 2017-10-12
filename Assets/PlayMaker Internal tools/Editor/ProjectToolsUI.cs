@@ -8,6 +8,8 @@ using UnityEngine;
 
 using HutongGames.PlayMakerEditorUtils;
 
+#pragma warning disable 0219, 0414
+
 namespace HutongGames.PlayMakerEditor
 {
 	public class ProjectToolsUI : BaseEditorWindow
