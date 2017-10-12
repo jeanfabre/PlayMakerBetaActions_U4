@@ -11,11 +11,16 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		[UIHint(UIHint.Variable)]
 		public FsmString stringVariable;
+
+        [Tooltip("Number of characters to get.")]
 		public FsmInt charCount;
-		[RequiredField]
+		
+        [RequiredField]
 		[UIHint(UIHint.Variable)]
 		public FsmString storeResult;
-		public bool everyFrame;
+
+        [Tooltip("Repeat every frame.")]
+        public bool everyFrame;
 
 		public override void Reset()
 		{
@@ -40,11 +45,12 @@ namespace HutongGames.PlayMaker.Actions
 		
 		void DoGetStringRight()
 		{
-			if (stringVariable == null) return;
-			if (storeResult == null) return;
+			if (stringVariable.IsNone) return;
+			if (storeResult.IsNone) return;
 			
-			string text = stringVariable.Value;
-			storeResult.Value = text.Substring(text.Length - charCount.Value, charCount.Value);
+			var text = stringVariable.Value;
+		    var count = Mathf.Clamp(charCount.Value, 0, text.Length);
+			storeResult.Value = text.Substring(text.Length - count, count);
 		}
 		
 	}

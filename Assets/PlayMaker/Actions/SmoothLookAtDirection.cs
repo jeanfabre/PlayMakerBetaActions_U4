@@ -37,12 +37,12 @@ namespace HutongGames.PlayMaker.Actions
         [Tooltip("Event to send if the direction difference is less than Min Magnitude.")]
         public FsmEvent finishEvent;
 
+        [Tooltip("Stop running the action if the direction difference is less than Min Magnitude.")]
+        public FsmBool finish;
+
         GameObject previousGo; // track game object so we can re-initialize when it changes.
         Quaternion lastRotation;
         Quaternion desiredRotation;
-
-
-        private bool _done;
 
         public override void Reset()
         {
@@ -54,6 +54,11 @@ namespace HutongGames.PlayMaker.Actions
             speed = 5;
             lateUpdate = true;
             finishEvent = null;
+        }
+
+        public override void OnPreprocess()
+        {
+            Fsm.HandleLateUpdate = true;
         }
 
         public override void OnEnter()
@@ -108,27 +113,27 @@ namespace HutongGames.PlayMaker.Actions
                 diff.y = 0;
             }
 
-
-            desiredRotation = Quaternion.LookRotation(diff, upVector.IsNone ? Vector3.up : upVector.Value);
-
-            lastRotation = Quaternion.Slerp(lastRotation, desiredRotation, speed.Value * Time.deltaTime);
-            go.transform.rotation = lastRotation;
-
-
-            if (Quaternion.Angle(desiredRotation, go.transform.rotation) < minMagnitude.Value)
+            var reachedTarget = false;
+            if (diff.sqrMagnitude > minMagnitude.Value)
             {
-                if (!_done)
-                {
-                    _done = true;
-                    Fsm.Event(finishEvent);
-                    Finish();
-                }
+                desiredRotation = Quaternion.LookRotation(diff, upVector.IsNone ? Vector3.up : upVector.Value);
             }
             else
             {
-                _done = false;
+                reachedTarget = true;
             }
-
+            
+            lastRotation = Quaternion.Slerp(lastRotation, desiredRotation, speed.Value * Time.deltaTime);
+            go.transform.rotation = lastRotation;
+            
+            if (reachedTarget) 
+            {
+                Fsm.Event(finishEvent);
+                if (finish.Value)
+                {
+                    Finish();
+                }
+            }
         }
     }
 }

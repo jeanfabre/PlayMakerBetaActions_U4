@@ -5,6 +5,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.StateMachine)]
+    [ActionTarget(typeof(PlayMakerFSM), "gameObject,fsmName")]
 	[Tooltip("Get the value of a String Variable from another FSM.")]
 	public class GetFsmString : FsmStateAction
 	{

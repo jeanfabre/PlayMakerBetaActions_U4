@@ -48,6 +48,8 @@ namespace HutongGames.PlayMaker.Actions
 
 		void DoGetAxis()
 		{
+		    if (FsmString.IsNullOrEmpty(axisName)) return;
+
 			var axisValue = Input.GetAxis(axisName.Value);
 
 			// if variable set to none, assume multiplier of 1

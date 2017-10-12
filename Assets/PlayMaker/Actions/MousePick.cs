@@ -5,27 +5,42 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Input)]
-	[Tooltip("Perform a Mouse Pick on the scene and stores the results. Use Ray Distance to set how close the camera must be to pick the object.")]
+	[Tooltip("Perform a Mouse Pick on the scene from the Main Camera and stores the results. Use Ray Distance to set how close the camera must be to pick the object.")]
 	public class MousePick : FsmStateAction
 	{
 		[RequiredField]
-		public FsmFloat rayDistance = 100f;
-		[UIHint(UIHint.Variable)]
+		[Tooltip("Set the length of the ray to cast from the Main Camera.")]
+        public FsmFloat rayDistance = 100f;
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Set Bool variable true if an object was picked, false if not.")]
 		public FsmBool storeDidPickObject;
-		[UIHint(UIHint.Variable)]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the picked GameObject.")]
 		public FsmGameObject storeGameObject;
-		[UIHint(UIHint.Variable)]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the point of contact.")]
 		public FsmVector3 storePoint;
-		[UIHint(UIHint.Variable)]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the normal at the point of contact.")]
 		public FsmVector3 storeNormal;
-		[UIHint(UIHint.Variable)]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the distance to the point of contact.")]
 		public FsmFloat storeDistance;
-		[UIHint(UIHint.Layer)]
-		[Tooltip("Pick only from these layers.")]
+		
+        [UIHint(UIHint.Layer)]	
+        [Tooltip("Pick only from these layers.")]
 		public FsmInt[] layerMask;
-		[Tooltip("Invert the mask, so you pick from all layers except those defined above.")]
+		
+        [Tooltip("Invert the mask, so you pick from all layers except those defined above.")]
 		public FsmBool invertMask;
-		public bool everyFrame;
+		
+        [Tooltip("Repeat every frame.")]
+        public bool everyFrame;
 		
 		public override void Reset()
 		{
@@ -43,9 +58,11 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter()
 		{
 			DoMousePick();
-			
-			if (!everyFrame)
-				Finish();
+
+		    if (!everyFrame)
+		    {
+		        Finish();
+		    }
 		}
 		
 		public override void OnUpdate()
@@ -53,11 +70,11 @@ namespace HutongGames.PlayMaker.Actions
 			DoMousePick();
 		}
 
-		void DoMousePick()
+	    private void DoMousePick()
 		{
-			RaycastHit hitInfo = ActionHelpers.MousePick(rayDistance.Value, ActionHelpers.LayerArrayToLayerMask(layerMask, invertMask.Value));
+			var hitInfo = ActionHelpers.MousePick(rayDistance.Value, ActionHelpers.LayerArrayToLayerMask(layerMask, invertMask.Value));
 			
-			bool didPick = hitInfo.collider != null;
+			var didPick = hitInfo.collider != null;
 			storeDidPickObject.Value = didPick;
 			
 			if (didPick)

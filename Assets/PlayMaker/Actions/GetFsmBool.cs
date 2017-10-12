@@ -5,24 +5,29 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.StateMachine)]
+    [ActionTarget(typeof(PlayMakerFSM), "gameObject,fsmName")]
 	[Tooltip("Get the value of a Bool Variable from another FSM.")]
 	public class GetFsmBool : FsmStateAction
 	{
 		[RequiredField]
 		public FsmOwnerDefault gameObject;
-		[UIHint(UIHint.FsmName)]
+		
+        [UIHint(UIHint.FsmName)]
 		[Tooltip("Optional name of FSM on Game Object")]
 		public FsmString fsmName;
-		[RequiredField]
+		
+        [RequiredField]
 		[UIHint(UIHint.FsmBool)]
 		public FsmString variableName;
-		[RequiredField]
+		
+        [RequiredField]
 		[UIHint(UIHint.Variable)]
 		public FsmBool storeValue;
-		public bool everyFrame;
+		
+        public bool everyFrame;
 
-		GameObject goLastFrame;
-		PlayMakerFSM fsm;
+	    private GameObject goLastFrame;
+	    private PlayMakerFSM fsm;
 		
 		public override void Reset()
 		{
@@ -34,9 +39,11 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter()
 		{
 			DoGetFsmBool();
-			
-			if (!everyFrame)
-				Finish();
+
+		    if (!everyFrame)
+		    {
+		        Finish();
+		    }
 		}
 
 		public override void OnUpdate()
@@ -44,11 +51,11 @@ namespace HutongGames.PlayMaker.Actions
 			DoGetFsmBool();
 		}
 
-		void DoGetFsmBool()
+	    private void DoGetFsmBool()
 		{
 			if (storeValue == null) return;
 
-			GameObject go = Fsm.GetOwnerDefaultTarget(gameObject);
+			var go = Fsm.GetOwnerDefaultTarget(gameObject);
 			if (go == null) return;
 			
 			// only get the fsm component if go has changed
@@ -61,8 +68,7 @@ namespace HutongGames.PlayMaker.Actions
 			
 			if (fsm == null) return;
 			
-			FsmBool fsmBool = fsm.FsmVariables.GetFsmBool(variableName.Value);
-			
+			var fsmBool = fsm.FsmVariables.GetFsmBool(variableName.Value);
 			if (fsmBool == null) return;
 			
 			storeValue.Value = fsmBool.Value;

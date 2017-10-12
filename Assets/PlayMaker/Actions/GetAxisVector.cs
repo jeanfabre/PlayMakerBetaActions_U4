@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
 {
+    [NoActionTargets]
 	[ActionCategory(ActionCategory.Input)]
 	[Tooltip("Gets a world direction Vector from 2 Input Axis. Typically used for a third person controller with Relative To set to the camera.")]
 	public class GetAxisVector : FsmStateAction

@@ -1,4 +1,4 @@
-// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
+// (c) Copyright HutongGames, LLC 2010-2015. All rights reserved.
 
 using UnityEngine;
 
@@ -74,7 +74,7 @@ namespace HutongGames.PlayMaker.Actions
 
 			storeResult.Value = Vector3.Lerp(fromVector.Value, toVector.Value, weight);
 			
-			if (weight > 1)
+			if (weight >= 1)
 			{
 				if (finishEvent != null)
 					Fsm.Event(finishEvent);

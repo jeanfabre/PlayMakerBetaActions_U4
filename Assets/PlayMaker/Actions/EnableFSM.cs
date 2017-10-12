@@ -5,6 +5,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.StateMachine)]
+    [ActionTarget(typeof(PlayMakerFSM),"gameObject,fsmName")]
 	[Tooltip("Enables/Disables an FSM component on a GameObject.")]
 	public class EnableFSM : FsmStateAction
 	{

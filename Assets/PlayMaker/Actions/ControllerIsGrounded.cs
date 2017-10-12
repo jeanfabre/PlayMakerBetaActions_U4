@@ -19,7 +19,7 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Event to send if not touching the ground.")]
 		public FsmEvent falseEvent;
 		
-		[Tooltip("Sore the result in a bool variable.")]
+		[Tooltip("Store the result in a bool variable.")]
 		[UIHint(UIHint.Variable)]
 		public FsmBool storeResult;
 		

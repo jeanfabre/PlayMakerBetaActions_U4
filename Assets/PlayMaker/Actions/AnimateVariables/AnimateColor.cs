@@ -1,5 +1,6 @@
 ﻿// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
+using System;
 using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
@@ -11,27 +12,33 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		[UIHint(UIHint.Variable)]
 		public FsmColor colorVariable;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveR;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.r.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.r.")]
 		public Calculation calculationR;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveG;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.g.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.g.")]
 		public Calculation calculationG;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveB;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.b.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.b.")]
 		public Calculation calculationB;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveA;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.a.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to colorVariable.a.")]
 		public Calculation calculationA;
 				
-		private bool finishInNextStep = false;
-		
-		Color clr;
-				
+		private bool finishInNextStep;
+						
 		public override void Reset()
 		{
 			base.Reset();
@@ -41,6 +48,7 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter()
 		{
 			base.OnEnter();
+
 			finishInNextStep = false;
 			resultFloats = new float[4];
 			fromFloats = new float[4];
@@ -58,31 +66,45 @@ namespace HutongGames.PlayMaker.Actions
 			calculations[1] = calculationG;
 			calculations[2] = calculationB;
 			calculations[3] = calculationA;
-			Init();
+			
+            Init();
+
+            // Set initial value
+            if (Math.Abs(delay.Value) < 0.01f)
+            {
+                UpdateVariableValue();
+            }
 		}
-		
-		
+
+	    private void UpdateVariableValue()
+	    {
+	        if (!colorVariable.IsNone)
+	        {
+	            colorVariable.Value = new Color(resultFloats[0], resultFloats[1], resultFloats[2], resultFloats[3]);
+	        }
+	    }
 
 		public override void OnUpdate()
 		{
 			base.OnUpdate();
-			if(!colorVariable.IsNone && isRunning){
-				clr = new Color(resultFloats[0], resultFloats[1],resultFloats[2],resultFloats[3]); 
-				colorVariable.Value = clr;
+
+			if(isRunning)
+            {
+                UpdateVariableValue();
 			}
 			
-			if(finishInNextStep){
-				if(!looping) {
+			if(finishInNextStep)
+            {
+				if(!looping) 
+                {
 					Finish();
-					if(finishEvent != null)	Fsm.Event(finishEvent);
+					Fsm.Event(finishEvent);
 				}
 			}
 			
-			if(finishAction && !finishInNextStep){
-				if(!colorVariable.IsNone){
-					clr = new Color(resultFloats[0], resultFloats[1],resultFloats[2],resultFloats[3]); 
-					colorVariable.Value = clr;
-				}
+			if(finishAction && !finishInNextStep)
+            {
+				UpdateVariableValue();
 				finishInNextStep = true;
 			}
 		}

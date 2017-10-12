@@ -20,7 +20,7 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Multiply the movement vector by a speed factor.")]
 		public FsmFloat speed;
 
-		[Tooltip("Move in local or word space.")]
+		[Tooltip("Move in local or world space.")]
 		public Space space;
 		
 		private GameObject previousGo; // remember so we can get new controller only when it changes.

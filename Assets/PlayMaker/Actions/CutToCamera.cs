@@ -9,11 +9,16 @@ namespace HutongGames.PlayMaker.Actions
 	public class CutToCamera : FsmStateAction
 	{
 		[RequiredField]
+        [Tooltip("The Camera to activate.")]
 		public Camera camera;
+
+        [Tooltip("Makes the camera the new MainCamera. The old MainCamera will be untagged.")]
 		public bool makeMainCamera;
+
+        [Tooltip("Cut back to the original MainCamera when exiting this state.")]
 		public bool cutBackOnExit;
 
-		Camera oldCamera;
+		private Camera oldCamera;
 
 		public override void Reset()
 		{
@@ -34,8 +39,10 @@ namespace HutongGames.PlayMaker.Actions
 
 			SwitchCamera(Camera.main, camera);
 
-			if (makeMainCamera)
-				camera.tag = "MainCamera";
+		    if (makeMainCamera)
+		    {
+		        camera.tag = "MainCamera";
+		    }
 			
 			Finish();
 		}
@@ -48,8 +55,18 @@ namespace HutongGames.PlayMaker.Actions
 			}
 		}
 
-		static void SwitchCamera(Camera camera1, Camera camera2)
+		private static void SwitchCamera(Camera camera1, Camera camera2)
 		{
+            /* Camera.main finds the first active camera with the MainCamera tag
+             * So this shouldn't be needed...?
+		    if (makeMainCamera)
+		    {
+                if (Camera.main != null)
+                {
+                    Camera.main.gameObject.tag = "Untagged";
+                }
+		    }*/
+
 			if (camera1 != null)
 			{
 				camera1.enabled = false;

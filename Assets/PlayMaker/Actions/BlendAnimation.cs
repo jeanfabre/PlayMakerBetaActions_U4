@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Animation)]
 	[Tooltip("Blends an Animation towards a Target Weight over a specified Time.\nOptionally sends an Event when finished.")]
-	public class BlendAnimation : FsmStateAction
+	public class BlendAnimation : BaseAnimationAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animation))]
@@ -73,7 +73,6 @@ namespace HutongGames.PlayMaker.Actions
 			}
 
 			var anim = animation[animName.Value];
-
 			if (anim == null)
 			{
 				LogWarning("Missing animation: " + animName.Value);
@@ -94,5 +93,6 @@ namespace HutongGames.PlayMaker.Actions
 				Finish();
 			}
 		}
+
 	}
 }

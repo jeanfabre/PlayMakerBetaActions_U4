@@ -5,6 +5,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Logic)]
+    [ActionTarget(typeof(PlayMakerFSM), "gameObject,fsmName")]
 	[Tooltip("Tests if an FSM is in the specified State.")]
 	public class FsmStateTest : FsmStateAction
 	{

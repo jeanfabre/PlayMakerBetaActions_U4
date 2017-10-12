@@ -135,9 +135,65 @@ namespace HutongGames.PlayMaker.Actions
             }
         }
 
+        public override void DoParticleCollision(GameObject other)
+        {
+            if (runFsm.HandleParticleCollision)
+            {
+                runFsm.OnParticleCollision(other);
+            }
+        }
+
         public override void DoControllerColliderHit(ControllerColliderHit collisionInfo)
         {
             runFsm.OnControllerColliderHit(collisionInfo);
+        }
+
+        public override void DoTriggerEnter2D(Collider2D other)
+        {
+            if (runFsm.HandleTriggerEnter)
+            {
+                runFsm.OnTriggerEnter2D(other);
+            }
+        }
+
+        public override void DoTriggerStay2D(Collider2D other)
+        {
+            if (runFsm.HandleTriggerStay)
+            {
+                runFsm.OnTriggerStay2D(other);
+            }
+        }
+
+        public override void DoTriggerExit2D(Collider2D other)
+        {
+            if (runFsm.HandleTriggerExit)
+            {
+                runFsm.OnTriggerExit2D(other);
+            }
+        }
+
+        public override void DoCollisionEnter2D(Collision2D collisionInfo)
+        {
+            if (runFsm.HandleCollisionEnter)
+            {
+                runFsm.OnCollisionEnter2D(collisionInfo);
+            }
+        }
+
+        public override void DoCollisionStay2D(Collision2D collisionInfo)
+        {
+            if (runFsm.HandleCollisionStay)
+            {
+                runFsm.OnCollisionStay2D(collisionInfo);
+            }
+        }
+
+        public override void DoCollisionExit2D(Collision2D collisionInfo)
+        {
+            if (runFsm.HandleCollisionExit)
+            {
+                runFsm.OnCollisionExit2D(collisionInfo);
+            }
         }
 
         public override void OnGUI()

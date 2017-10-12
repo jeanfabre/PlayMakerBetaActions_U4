@@ -51,6 +51,11 @@ namespace HutongGames.PlayMaker.Actions
 			everyFrame = true;
 		}
 
+        public override void OnPreprocess()
+        {
+            Fsm.HandleLateUpdate = true;
+        }
+
 		public override void OnEnter()
 		{
 			DoLookAt();
@@ -83,6 +88,11 @@ namespace HutongGames.PlayMaker.Actions
 
         public bool UpdateLookAtPosition()
         {
+            if (Fsm == null)
+            {
+                return false;
+            }
+
             go = Fsm.GetOwnerDefaultTarget(gameObject);
             if (go == null)
             {

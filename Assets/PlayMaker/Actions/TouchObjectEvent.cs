@@ -6,6 +6,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Device)]
+    [ActionTarget(typeof(GameObject), "gameObject")]
 	[Tooltip("Sends events when an object is touched. Optionally filter by a fingerID. NOTE: Uses the MainCamera!")]
 	public class TouchObjectEvent : FsmStateAction
 	{

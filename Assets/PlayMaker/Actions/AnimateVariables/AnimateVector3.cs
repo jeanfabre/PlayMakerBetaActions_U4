@@ -1,5 +1,6 @@
 ﻿// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
+using System;
 using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
@@ -11,24 +12,27 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		[UIHint(UIHint.Variable)]
 		public FsmVector3 vectorVariable;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveX;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to vectorVariable.x.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to vectorVariable.x.")]
 		public Calculation calculationX;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveY;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to vectorVariable.y.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to vectorVariable.y.")]
 		public Calculation calculationY;
-		[RequiredField]
+		
+        [RequiredField]
 		public FsmAnimationCurve curveZ;
-		[Tooltip("Calculation lets you set a type of curve deformation that will be applied to vectorVariable.z.")]
+		
+        [Tooltip("Calculation lets you set a type of curve deformation that will be applied to vectorVariable.z.")]
 		public Calculation calculationZ;
-		
-			
-		private bool finishInNextStep = false;
-		
-		Vector3 vct;
 				
+		private bool finishInNextStep;
+					
 		public override void Reset()
 		{
 			base.Reset();
@@ -38,6 +42,7 @@ namespace HutongGames.PlayMaker.Actions
 		public override void OnEnter()
 		{
 			base.OnEnter();
+
 			finishInNextStep = false;
 			resultFloats = new float[3];
 			fromFloats = new float[3];
@@ -52,32 +57,46 @@ namespace HutongGames.PlayMaker.Actions
 			calculations[0] = calculationX;
 			calculations[1] = calculationY;
 			calculations[2] = calculationZ;
-			Init();
-		}
-		
-		
+			
+            Init();
+
+            // Set initial value
+            if (Math.Abs(delay.Value) < 0.01f)
+            {
+                UpdateVariableValue();
+            }
+        }
+
+	    private void UpdateVariableValue()
+	    {
+            if (!vectorVariable.IsNone)
+            {
+                vectorVariable.Value = new Vector3(resultFloats[0], resultFloats[1], resultFloats[2]);
+            }	        
+	    }
 
 		public override void OnUpdate()
 		{
 			base.OnUpdate();
-			if(!vectorVariable.IsNone && isRunning){
-				vct = new Vector3(resultFloats[0], resultFloats[1], resultFloats[2]);
-				vectorVariable.Value = vct;
+
+			if(isRunning)
+            {
+				UpdateVariableValue();
 			}
 			
-			if(finishInNextStep){
-				if(!looping) {
+			if(finishInNextStep)
+            {
+				if(!looping) 
+                {
 					Finish();
-					if(finishEvent != null)	Fsm.Event(finishEvent);
+                    Fsm.Event(finishEvent);
 				}
 				
 			}
 			
-			if(finishAction && !finishInNextStep){
-				if(!vectorVariable.IsNone){
-					vct = new Vector3(resultFloats[0], resultFloats[1], resultFloats[2]);
-					vectorVariable.Value = vct;
-				}
+			if(finishAction && !finishInNextStep)
+            {
+				UpdateVariableValue();
 				finishInNextStep = true;
 			}
 		}

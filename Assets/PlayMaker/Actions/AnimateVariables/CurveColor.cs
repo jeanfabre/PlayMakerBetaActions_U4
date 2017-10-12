@@ -71,7 +71,7 @@ namespace HutongGames.PlayMaker.Actions
 			calculations[0] = calculationR;
 			calculations[1] = calculationG;
 			calculations[2] = calculationB;
-			calculations[2] = calculationA;
+			calculations[3] = calculationA;
 			//call Init after you have initialized curves array
 			Init();
 		}

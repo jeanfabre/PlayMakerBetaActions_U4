@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Animation)]
 	[Tooltip("Sets the current Time of an Animation, Normalize time means 0 (start) to 1 (end); useful if you don't care about the exact time. Check Every Frame to update the time continuosly.")]
-	public class SetAnimationTime : ComponentAction<Animation>
+	public class SetAnimationTime : BaseAnimationAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animation))]
@@ -40,7 +40,7 @@ namespace HutongGames.PlayMaker.Actions
 			DoSetAnimationTime(gameObject.OwnerOption == OwnerDefaultOption.UseOwner ? Owner : gameObject.GameObject.Value);
 		}
 
-		void DoSetAnimationTime(GameObject go)
+	    private void DoSetAnimationTime(GameObject go)
 		{
 		    if (!UpdateCache(go))
 		    {

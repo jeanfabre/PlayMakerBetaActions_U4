@@ -1,10 +1,13 @@
 // (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
 using System;
+using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.StateMachine)]
+    [ActionTarget(typeof(PlayMakerFSM), "eventTarget")]
+    [ActionTarget(typeof(GameObject), "eventTarget")]
 	[Tooltip("Sends an Event after an optional delay. NOTE: To send events between FSMs they must be marked as Global in the Events Browser.")]
 	public class SendEvent : FsmStateAction
 	{

@@ -33,7 +33,7 @@ namespace HutongGames.PlayMaker.Actions
             size = new Vector3(1f, 1f, 1f);
         }
 
-        public override void OnDrawGizmos()
+        public override void OnDrawActionGizmos()
         {
             var ownerTransform = Fsm.GetOwnerDefaultTarget(gameObject).transform;
             if (ownerTransform == null)

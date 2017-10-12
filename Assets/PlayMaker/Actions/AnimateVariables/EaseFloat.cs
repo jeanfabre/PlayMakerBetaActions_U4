@@ -36,6 +36,7 @@ namespace HutongGames.PlayMaker.Actions
 			toFloats[0] = toValue.Value;
 			resultFloats = new float[1];
 			finishInNextStep = false;
+            floatVariable.Value = fromValue.Value;
 		}
 		
 		public override void OnExit (){

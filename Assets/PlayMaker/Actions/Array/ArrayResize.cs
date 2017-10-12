@@ -8,12 +8,16 @@ namespace HutongGames.PlayMaker.Actions
     [Tooltip("Resize an array.")]
     public class ArrayResize : FsmStateAction
     {
-        [RequiredField] [UIHint(UIHint.Variable)] [Tooltip("The Array Variable to resize")] public FsmArray array;
+        [RequiredField] 
+        [UIHint(UIHint.Variable)] 
+        [Tooltip("The Array Variable to resize")] 
+        public FsmArray array;
 
-        [Tooltip("The new size of the array.")] public FsmInt newSize;
+        [Tooltip("The new size of the array.")] 
+        public FsmInt newSize;
 
-        [UIHint(UIHint.FsmEvent)] [Tooltip("The event to trigger if the new size is out of range")] public FsmEvent
-            sizeOutOfRangeEvent;
+        [Tooltip("The event to trigger if the new size is out of range")] 
+        public FsmEvent sizeOutOfRangeEvent;
 
         public override void OnEnter()
         {

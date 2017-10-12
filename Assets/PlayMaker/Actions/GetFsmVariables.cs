@@ -1,10 +1,11 @@
-// (c) copyright Hutong Games, LLC 2010-2012. All rights reserved.
+// (c) copyright Hutong Games, LLC 2010-2016. All rights reserved.
 
 using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
 {
     [ActionCategory(ActionCategory.StateMachine)]
+    [ActionTarget(typeof(PlayMakerFSM), "gameObject,fsmName")]
     [Tooltip("Get the values of multiple variables in another FSM and store in variables of the same name in this FSM.")]
     public class GetFsmVariables : FsmStateAction
     {
@@ -19,6 +20,7 @@ namespace HutongGames.PlayMaker.Actions
         [RequiredField]
         [HideTypeFilter]
         [UIHint(UIHint.Variable)]
+		[Tooltip("Store the values of the FsmVariables")]
         public FsmVar[] getVariables;
 
         [Tooltip("Repeat every frame.")]

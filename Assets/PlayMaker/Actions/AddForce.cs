@@ -53,7 +53,7 @@ namespace HutongGames.PlayMaker.Actions
 			everyFrame = false;
 		}
 
-        public override void Awake()
+        public override void OnPreprocess()
         {
             Fsm.HandleFixedUpdate = true;
         }
@@ -81,7 +81,7 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-			var force = vector.IsNone ? new Vector3(x.Value, y.Value, z.Value) : vector.Value;
+			var force = vector.IsNone ? new Vector3() : vector.Value;
 			
 			// override any axis
 

@@ -22,8 +22,13 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			// Have to get the root, since the game object will be destroyed if any of its parents are destroyed.
 			
-			Object.DontDestroyOnLoad(Owner.transform.root.gameObject);
+			GameObject _go = Fsm.GetOwnerDefaultTarget(gameObject);
 			
+			if (_go!=null)
+			{
+				Object.DontDestroyOnLoad( _go.transform.root.gameObject);
+			}
+
 			Finish();
 		}
 	}

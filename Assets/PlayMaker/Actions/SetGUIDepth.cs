@@ -16,7 +16,7 @@ namespace HutongGames.PlayMaker.Actions
 			depth = 0;
 		}
 
-		public override void Awake()
+        public override void OnPreprocess()
 		{
 			Fsm.HandleOnGUI = true;
 		}

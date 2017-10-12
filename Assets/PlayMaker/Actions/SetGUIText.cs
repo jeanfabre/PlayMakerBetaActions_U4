@@ -11,7 +11,10 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		[CheckForComponent(typeof(GUIText))]
 		public FsmOwnerDefault gameObject;
+
+        [UIHint(UIHint.TextArea)]
 		public FsmString text;
+
 		public bool everyFrame;
 		
 		public override void Reset()

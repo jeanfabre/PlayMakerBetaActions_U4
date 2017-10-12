@@ -15,6 +15,9 @@ namespace HutongGames.PlayMaker.Actions
         [Tooltip("Separator to insert between each String. E.g. space character.")]
         public FsmString separator;
 
+        [Tooltip("Add Separator to end of built string.")]
+	    public FsmBool addToEnd;
+
 		[RequiredField]
 		[UIHint(UIHint.Variable)]
 		[Tooltip("Store the final String in a variable.")]
@@ -29,6 +32,7 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			stringParts = new FsmString[3];
 			separator = null;
+		    addToEnd = true;
 			storeResult = null;
 			everyFrame = false;
 		}
@@ -53,12 +57,18 @@ namespace HutongGames.PlayMaker.Actions
 			if (storeResult == null) return;
 			
 			result = "";
-			
-			foreach (var stringPart in stringParts)
-			{
-				result += stringPart;
-                result += separator.Value;
-			}
+
+		    for (var i = 0; i < stringParts.Length-1; i++)
+		    {
+		        result += stringParts[i];
+		        result += separator.Value;
+		    }
+		    result += stringParts[stringParts.Length - 1];
+
+		    if (addToEnd.Value)
+		    {
+		        result += separator.Value;
+		    }
 
 		    storeResult.Value = result;
 		}

@@ -6,6 +6,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Logic)]
+    [ActionTarget(typeof(GameObject), "gameObject")]
 	[Tooltip("Tests if a Game Object is visible.")]
 	public class GameObjectIsVisible : ComponentAction<Renderer>
 	{

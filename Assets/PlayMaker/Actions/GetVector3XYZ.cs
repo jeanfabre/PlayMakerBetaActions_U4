@@ -5,7 +5,7 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Vector3)]
-	[Tooltip("Get the XYZ channels of a Vector3 Variable and storew them in Float Variables.")]
+	[Tooltip("Get the XYZ channels of a Vector3 Variable and store them in Float Variables.")]
 	public class GetVector3XYZ : FsmStateAction
 	{
 		[RequiredField]

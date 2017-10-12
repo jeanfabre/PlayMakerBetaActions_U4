@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace HutongGames.PlayMakerEditor
 {
-    [CustomActionEditor(typeof (LookAt))]
+    [CustomActionEditor(typeof (HutongGames.PlayMaker.Actions.LookAt))]
     public class LookAtActionEditor : CustomActionEditor
     {
         public override bool OnGUI()
@@ -16,7 +16,7 @@ namespace HutongGames.PlayMakerEditor
 
         public override void OnSceneGUI()
         {
-            var lookAtAction = (LookAt) target;
+            var lookAtAction = (HutongGames.PlayMaker.Actions.LookAt)target;
 
             if (lookAtAction.UpdateLookAtPosition())
             {
@@ -47,7 +47,7 @@ namespace HutongGames.PlayMakerEditor
                         var goTargetTransform = goTarget.transform;
                         var worldTargetPos = goTargetTransform.TransformPoint(lookAtAction.targetPosition.Value);
 
-                    lookAtAction.targetPosition.Value = goTargetTransform.InverseTransformPoint(Handles.PositionHandle(worldTargetPos, goTarget.transform.rotation));
+                        lookAtAction.targetPosition.Value = goTargetTransform.InverseTransformPoint(Handles.PositionHandle(worldTargetPos, goTarget.transform.rotation));
                         Handles.color = new Color(1, 1, 1, 0.2f);
                         Handles.DrawLine(goTargetTransform.position, lookAtAction.GetLookAtPositionWithVertical());
                     }
@@ -67,8 +67,11 @@ namespace HutongGames.PlayMakerEditor
                 // Lookat vector
 
                 Handles.DrawLine(goPosition, lookAtPosition);
+#if UNITY_5_5_OR_NEWER
+                Handles.ConeHandleCap(0, goPosition + lookAtVector.normalized * (distance - arrowSize * 0.7f), lookAtRotation, arrowSize, EventType.Repaint); // fudge factor to position cap correctly
+#else
                 Handles.ConeCap(0, goPosition + lookAtVector.normalized * (distance - arrowSize * 0.7f)  , lookAtRotation, arrowSize); // fudge factor to position cap correctly
-
+#endif
                 // Arc between vectors
 
                 Handles.color = new Color(1, 1, 1, 0.2f);

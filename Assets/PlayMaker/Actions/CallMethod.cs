@@ -33,6 +33,9 @@ namespace HutongGames.PlayMaker.Actions
         [Tooltip("Repeat every frame.")]
         public bool everyFrame;
 
+        [Tooltip("Use the old manual editor UI.")]
+        public bool manualUI;
+
         private FsmObject cachedBehaviour;
         private FsmString cachedMethodName;
         private Type cachedType;
@@ -40,6 +43,15 @@ namespace HutongGames.PlayMaker.Actions
         private ParameterInfo[] cachedParameterInfo;
         private object[] parametersArray;
         private string errorString;
+
+        public override void Reset()
+        {
+            behaviour = null;
+            methodName = null;
+            parameters = null;
+            storeResult = null;
+            everyFrame = false;
+        }
 
         public override void OnEnter()
         {
@@ -76,7 +88,7 @@ namespace HutongGames.PlayMaker.Actions
                 }
             }
 
-            object result = null;
+            object result;
             if (cachedParameterInfo.Length == 0)
             {
                 result = cachedMethodInfo.Invoke(cachedBehaviour.Value, null);
@@ -87,12 +99,30 @@ namespace HutongGames.PlayMaker.Actions
                 {
                     var parameter = parameters[i];
                     parameter.UpdateValue();
-                    parametersArray[i] = parameter.GetValue();
+                    if (parameter.Type == VariableType.Array)
+                    {
+                        parameter.UpdateValue();
+                        var objectArray = parameter.GetValue() as object[];
+                        var realType = cachedParameterInfo[i].ParameterType.GetElementType();
+                        var convertedArray = Array.CreateInstance(realType, objectArray.Length);
+                        for (int index = 0; index < objectArray.Length; index++)
+                            convertedArray.SetValue(objectArray[index], index);
+                        parametersArray[i] = convertedArray;
+                    }
+                    else
+                    {
+                        parameter.UpdateValue();
+                        parametersArray[i] = parameter.GetValue();
+                    }             
                 }
 
                 result = cachedMethodInfo.Invoke(cachedBehaviour.Value, parametersArray);
             }
-            storeResult.SetValue(result);
+
+            if (storeResult != null && !storeResult.IsNone && storeResult.Type != VariableType.Unknown)
+            {
+                storeResult.SetValue(result);
+            }
         }
 
         // TODO: Move tests to helper function in core
@@ -105,10 +135,20 @@ namespace HutongGames.PlayMaker.Actions
                 cachedMethodName.Name != methodName.Name;       // methodName variable name changed
         }
 
+        private void ClearCache()
+        {
+            cachedBehaviour = null;
+            cachedMethodName = null;
+            cachedType = null;
+            cachedMethodInfo = null;
+            cachedParameterInfo = null;
+        }
+
         private bool DoCache()
         {
             //Debug.Log("DoCache");
-
+            
+            ClearCache();
             errorString = string.Empty;
             cachedBehaviour = new FsmObject(behaviour);
             cachedMethodName = new FsmString(methodName);
@@ -129,6 +169,7 @@ namespace HutongGames.PlayMaker.Actions
             }
 
             cachedType = behaviour.Value.GetType();
+
             var types = new List<Type>(parameters.Length);
             foreach (var each in parameters)
             {
@@ -152,9 +193,10 @@ namespace HutongGames.PlayMaker.Actions
                 errorString += "Invalid Method Name or Parameters: " + methodName.Value + "\n";
                 Finish();
                 return false;
-            }
+            }              
 
             cachedParameterInfo = cachedMethodInfo.GetParameters();
+
             return true;
         }
 
@@ -191,7 +233,6 @@ namespace HutongGames.PlayMaker.Actions
                 return errorString; // last error message
             }
 
-            errorString = string.Empty;
             if (!DoCache())
             {
                 return errorString;

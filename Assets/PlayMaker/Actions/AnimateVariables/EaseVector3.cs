@@ -40,6 +40,7 @@ namespace HutongGames.PlayMaker.Actions
 			toFloats[2] = toValue.Value.z;
 			resultFloats = new float[3];
 			finishInNextStep = false;
+		    vector3Variable.Value = fromValue.Value;
 		}
 		
 		public override void OnExit (){

@@ -44,14 +44,14 @@ namespace HutongGames.PlayMaker.Actions
 
         public override void OnEnter()
         {
-#if UNITY_IPHONE
+#if UNITY_IPHONE || UNITY_IOS
 			
 			getScreenCanDarken.Value = Screen.sleepTimeout > 0f; //iPhoneSettings.screenCanDarken;
 			getUniqueIdentifier.Value = SystemInfo.deviceUniqueIdentifier; //iPhoneSettings.uniqueIdentifier;
 			getName.Value = SystemInfo.deviceName; //iPhoneSettings.name;
 			getModel.Value = SystemInfo.deviceModel; //iPhoneSettings.model;
 			getSystemName.Value = SystemInfo.operatingSystem; //iPhoneSettings.systemName;
-#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6
+#if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
             getGeneration.Value = iPhone.generation.ToString();
 #else
             getGeneration.Value = UnityEngine.iOS.Device.generation.ToString();

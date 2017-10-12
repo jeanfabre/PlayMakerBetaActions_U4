@@ -72,7 +72,7 @@ namespace HutongGames.PlayMaker.Actions
 
         public override void OnFixedUpdate()
         {
-            runFsm.LateUpdate();
+            runFsm.FixedUpdate();
             if (!runFsm.Finished)
             {
                 return; // continue later

@@ -12,6 +12,7 @@ namespace HutongGames.PlayMaker.Actions
 		public FsmOwnerDefault gameObject;
 
 		[UIHint(UIHint.Variable)]
+		[RequiredField]
         [Tooltip("Store the component in an Object variable.\nNOTE: Set theObject variable's Object Type to get a component of that type. E.g., set Object Type to UnityEngine.AudioListener to get the AudioListener component on the camera.")]
 		public FsmObject storeComponent;
 		
@@ -53,7 +54,12 @@ namespace HutongGames.PlayMaker.Actions
 			{
 				return;
 			}
-			
+
+			if (storeComponent.IsNone)
+			{
+				return;
+			}
+
 			storeComponent.Value = targetObject.GetComponent(storeComponent.ObjectType);
 		}
 	}

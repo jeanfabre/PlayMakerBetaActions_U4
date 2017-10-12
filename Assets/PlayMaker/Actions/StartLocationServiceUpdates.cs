@@ -17,7 +17,7 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Event to send if the location services fail to start.")]
 		public FsmEvent failedEvent;
 
-#if UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
+#if UNITY_IPHONE || UNITY_IOS || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
 		float startTime;
 #endif
         public override void Reset()
@@ -31,7 +31,7 @@ namespace HutongGames.PlayMaker.Actions
 
 		public override void OnEnter()
         {
-#if UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
+#if UNITY_IPHONE || UNITY_IOS || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
             startTime = FsmTime.RealtimeSinceStartup;
 			
   			Input.location.Start(desiredAccuracy.Value, updateDistance.Value);			
@@ -42,7 +42,7 @@ namespace HutongGames.PlayMaker.Actions
 		
 		public override void OnUpdate()
         {
-#if UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
+#if UNITY_IPHONE || UNITY_IOS || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8
 			
 			if (Input.location.status == LocationServiceStatus.Failed ||
 				Input.location.status == LocationServiceStatus.Stopped ||

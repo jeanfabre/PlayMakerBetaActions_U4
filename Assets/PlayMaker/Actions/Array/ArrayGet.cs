@@ -27,7 +27,6 @@ namespace HutongGames.PlayMaker.Actions
 
         [ActionSection("Events")]
 
-        [UIHint(UIHint.FsmEvent)] 
         [Tooltip("The event to trigger if the index is out of range")] 
         public FsmEvent indexOutOfRange;
 

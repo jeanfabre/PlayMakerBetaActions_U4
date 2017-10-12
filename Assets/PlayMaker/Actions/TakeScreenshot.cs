@@ -8,42 +8,93 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Application)]
-	[Tooltip("Saves a Screenshot to the users MyPictures folder. TIP: Can be useful for automated testing and debugging.")]
+    [Tooltip("Saves a Screenshot. NOTE: Does nothing in Web Player. On Android, the resulting screenshot is available some time later.")]
 	public class TakeScreenshot : FsmStateAction
 	{
+	    public enum Destination
+	    {
+	        MyPictures,
+            PersistentDataPath,
+            CustomPath
+	    }
+
+        [Tooltip("Where to save the screenshot.")]
+	    public Destination destination;
+
+        [Tooltip("Path used with Custom Path Destination option.")]
+	    public FsmString customPath;
+
 		[RequiredField]
 		public FsmString filename;
-		public bool autoNumber;
+
+        [Tooltip("Add an auto-incremented number to the filename.")]
+		public FsmBool autoNumber;
+
+        [Tooltip("Factor by which to increase resolution.")]
+	    public FsmInt superSize;
+
+        [Tooltip("Log saved file info in Unity console.")]
+	    public FsmBool debugLog;
 
 		private int screenshotCount;
 
 		public override void Reset()
 		{
+            destination = Destination.MyPictures;
 			filename = "";
-			autoNumber = false;
+			autoNumber = null;
+		    superSize = null;
+		    debugLog = null;
 		}
 
 		public override void OnEnter()
 		{
 			if (string.IsNullOrEmpty(filename.Value)) return;
 
-			string screenshotPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)+"/";
-			string screenshotFullPath = screenshotPath + filename.Value + ".png";
+		    string screenshotPath;
+		    switch (destination)
+		    {
+		        case Destination.MyPictures:
+                    screenshotPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+		            break;
+		        case Destination.PersistentDataPath:
+		            screenshotPath = Application.persistentDataPath;
+		            break;
+                case Destination.CustomPath:
+		            screenshotPath = customPath.Value;
+                    break;
+		        default:
+		            screenshotPath = "";
+                    break;
+		    }
 
-			//Debug.Log(screenshotFullPath);
+		    screenshotPath = screenshotPath.Replace("\\","/") + "/";
+		    var screenshotFullPath = screenshotPath + filename.Value + ".png";
 
-			if (autoNumber)
-			{
-				while (System.IO.File.Exists(screenshotFullPath)) 
-				{
-					screenshotCount++;
-					screenshotFullPath = screenshotPath + filename.Value + screenshotCount + ".png";
-				} 
-			}
+		    if (autoNumber.Value)
+		    {
+		        while (System.IO.File.Exists(screenshotFullPath))
+		        {
+		            screenshotCount++;
+		            screenshotFullPath = screenshotPath + filename.Value + screenshotCount + ".png";
+		        }
+		    }
 
-			Application.CaptureScreenshot(screenshotFullPath);
-			
-			Finish();
+            if (debugLog.Value)
+            {
+                Debug.Log("TakeScreenshot: " + screenshotFullPath);
+            }
+
+#if UNITY_2017_1_OR_NEWER
+		    ScreenCapture.CaptureScreenshot(screenshotFullPath, superSize.Value);
+#else
+            Application.CaptureScreenshot(screenshotFullPath, superSize.Value);
+#endif
+
+
+
+
+		    Finish();
 		}
 	}
 }

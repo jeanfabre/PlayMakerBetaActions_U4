@@ -42,6 +42,11 @@ namespace HutongGames.PlayMaker.Actions
 			lateUpdate = false;
 		}
 
+        public override void OnPreprocess()
+        {
+            if (lateUpdate) Fsm.HandleLateUpdate = true;
+        }
+
 		public override void OnEnter()
 		{
 			if (!everyFrame && !lateUpdate)

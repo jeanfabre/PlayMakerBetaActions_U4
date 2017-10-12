@@ -7,7 +7,8 @@ using HutongGames.PlayMaker;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Camera)]
-	[Tooltip("Gets the camera tagged MainCamera from the scene")]
+    [ActionTarget(typeof(Camera),"storeGameObject")]
+	[Tooltip("Gets the GameObject tagged MainCamera from the scene")]
 	public class GetMainCamera : FsmStateAction
 	{
 		[RequiredField]

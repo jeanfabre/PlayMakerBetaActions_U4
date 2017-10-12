@@ -22,9 +22,11 @@ namespace HutongGames.PlayMaker.Actions
 		public RotationAxes axes = RotationAxes.MouseXAndY;
 
 		[RequiredField]
+		[Tooltip("Sensitivity of movement in X direction.")]
 		public FsmFloat sensitivityX;
 
 		[RequiredField]
+		[Tooltip("Sensitivity of movement in Y direction.")]
 		public FsmFloat sensitivityY;
 
 		[HasFloatSlider(-360,360)]

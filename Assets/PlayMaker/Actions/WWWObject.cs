@@ -1,6 +1,6 @@
 ﻿// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
-#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_FLASH || UNITY_PS3 || UNITY_BLACKBERRY || UNITY_WP8 || UNITY_PSM || UNITY_WEBGL)
+#if !(UNITY_TVOS || UNITY_IPHONE || UNITY_IOS || UNITY_ANDROID || UNITY_FLASH || UNITY_PS3 || UNITY_PS4 || UNITY_XBOXONE || UNITY_BLACKBERRY || UNITY_WP8 || UNITY_PSM || UNITY_WEBGL)
 
 using UnityEngine;
 
@@ -94,7 +94,11 @@ namespace HutongGames.PlayMaker.Actions
 				storeText.Value = wwwObject.text;
 				storeTexture.Value = wwwObject.texture;
 
+#if UNITY_5_6_OR_NEWER
+                storeMovieTexture.Value = wwwObject.GetMovieTexture();
+#else
                 storeMovieTexture.Value = wwwObject.movie;
+#endif
 
 				errorString.Value = wwwObject.error;
 

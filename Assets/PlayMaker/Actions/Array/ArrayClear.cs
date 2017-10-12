@@ -31,6 +31,7 @@ namespace HutongGames.PlayMaker.Actions
 
             if (!resetValue.IsNone)
             {
+                resetValue.UpdateValue();
                 object _val = resetValue.GetValue();
                 for (int i = 0; i < count; i++)
                 {

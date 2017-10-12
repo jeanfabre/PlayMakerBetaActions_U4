@@ -12,6 +12,7 @@ namespace HutongGames.PlayMaker.Actions
 		[UIHint(UIHint.Variable)]
 		public FsmString stringVariable;
 
+        [UIHint(UIHint.TextArea)]
 		public FsmString stringValue;
 		
         public bool everyFrame;

@@ -1,11 +1,11 @@
-// (c) copyright Hutong Games, LLC 2010-2012. All rights reserved.
+// (c) copyright Hutong Games, LLC 2010-2016. All rights reserved.
 
 using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
 {
     [ActionCategory(ActionCategory.StateMachine)]
-    [Tooltip("Forward an event recieved by this FSM to another target.")]
+    [Tooltip("Forward an event received by this FSM to another target.")]
     public class ForwardEvent : FsmStateAction
     {
         [Tooltip("Forward to this target.")]

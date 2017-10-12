@@ -25,7 +25,8 @@ namespace HutongGames.PlayMaker.Actions
 		[Tooltip("Remove the Component when this State is exited.")]
 		public FsmBool removeOnExit;
 
-		Component addedComponent;
+        // save added component so we can remove on exit
+	    private Component addedComponent;
 
 		public override void Reset()
 		{
@@ -49,12 +50,12 @@ namespace HutongGames.PlayMaker.Actions
 			}
 		}
 
-		void DoAddComponent()
+	    private void DoAddComponent()
 		{
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
+			if (go == null) return;
 
 			addedComponent = go.AddComponent(ReflectionUtils.GetGlobalType(component.Value));
-
 		    storeComponent.Value = addedComponent;
 
 			if (addedComponent == null)

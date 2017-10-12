@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace HutongGames.PlayMaker.Actions
 {
+    [NoActionTargets]
 	[ActionCategory(ActionCategory.Input)]
 	[Tooltip("Transforms 2d input into a 3d world space vector. E.g., can be used to transform input from a touch joystick to a movement vector.")]
 	public class TransformInputToWorldSpace : FsmStateAction

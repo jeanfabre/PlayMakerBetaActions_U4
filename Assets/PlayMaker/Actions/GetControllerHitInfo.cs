@@ -9,17 +9,27 @@ namespace HutongGames.PlayMaker.Actions
 	public class GetControllerHitInfo : FsmStateAction
 	{
 		[UIHint(UIHint.Variable)]
+        [Tooltip("Store the GameObject hit in the last collision.")]
 		public FsmGameObject gameObjectHit;
+
 		[UIHint(UIHint.Variable)]
+        [Tooltip("Store the contact point of the last collision in world coordinates.")]
 		public FsmVector3 contactPoint;
+
 		[UIHint(UIHint.Variable)]
-		public FsmVector3 contactNormal;
+		[Tooltip("Store the normal of the last collision.")]
+        public FsmVector3 contactNormal;
+
 		[UIHint(UIHint.Variable)]
+        [Tooltip("Store the direction of the last move before the collision.")]
 		public FsmVector3 moveDirection;
-		[UIHint(UIHint.Variable)]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the distance of the last move before the collision.")]
 		public FsmFloat moveLength;
-		[UIHint(UIHint.Variable)]
-		[Tooltip("Useful for triggering different effects. Audio, particles...")]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the physics material of the Game Object Hit. Useful for triggering different effects. Audio, particles...")]
 		public FsmString physicsMaterialName;
 
 		public override void Reset()
@@ -32,7 +42,12 @@ namespace HutongGames.PlayMaker.Actions
 			physicsMaterialName = null;
 		}
 
-		void StoreTriggerInfo()
+        public override void OnPreprocess()
+        {
+            Fsm.HandleControllerColliderHit = true;
+        }
+
+	    private void StoreTriggerInfo()
 		{
 			if (Fsm.ControllerCollider == null) return;
 			

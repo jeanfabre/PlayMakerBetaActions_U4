@@ -21,11 +21,11 @@ namespace HutongGames.PlayMaker.Actions
         [Tooltip("Set the value of the array at the specified index.")] 
         public FsmVar value;
 
-        [Tooltip("Repeat every frame while the state is active.")] public bool everyFrame;
+        [Tooltip("Repeat every frame while the state is active.")] 
+        public bool everyFrame;
 
         [ActionSection("Events")] 
 
-        [UIHint(UIHint.FsmEvent)] 
         [Tooltip("The event to trigger if the index is out of range")] 
         public FsmEvent indexOutOfRange;
 

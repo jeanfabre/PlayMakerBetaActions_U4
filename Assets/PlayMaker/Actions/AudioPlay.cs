@@ -5,6 +5,8 @@ using UnityEngine;
 namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Audio)]
+    [ActionTarget(typeof(AudioSource), "gameObject")]
+    [ActionTarget(typeof(AudioClip), "oneShotClip")]
 	[Tooltip("Plays the Audio Clip set with Set Audio Clip or in the Audio Source inspector on a Game Object. Optionally plays a one shot Audio Clip.")]
 	public class AudioPlay : FsmStateAction
 	{

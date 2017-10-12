@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace HutongGames.PlayMakerEditor
 {
-    [CustomActionEditor(typeof (SetCameraFOV))]
+    [CustomActionEditor(typeof(HutongGames.PlayMaker.Actions.SetCameraFOV))]
     public class SetCameraFOVActionEditor : CustomActionEditor
     {
         private GameObject cachedGameObject;
@@ -19,7 +19,7 @@ namespace HutongGames.PlayMakerEditor
 
         public override void OnSceneGUI()
         {
-            var setCameraFOVAction = (SetCameraFOV) target;
+            var setCameraFOVAction = (HutongGames.PlayMaker.Actions.SetCameraFOV)target;
             if (setCameraFOVAction.fieldOfView.IsNone)
             {
                 return;

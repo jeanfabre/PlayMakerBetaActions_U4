@@ -48,6 +48,11 @@ namespace HutongGames.PlayMaker.Actions
 			rotationDamping = 3f;
 		}
 
+        public override void OnPreprocess()
+        {
+            Fsm.HandleLateUpdate = true;
+        }
+
 		public override void OnLateUpdate()
 		{
 			if (targetObject.Value == null)

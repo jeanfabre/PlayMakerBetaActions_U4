@@ -9,11 +9,18 @@ namespace HutongGames.PlayMaker.Actions
 	[Tooltip("Detect collisions with objects that have RigidBody components. \nNOTE: The system events, TRIGGER ENTER, TRIGGER STAY, and TRIGGER EXIT are sent when any object collides with the trigger. Use this action to filter collisions by Tag.")]
 	public class TriggerEvent : FsmStateAction
 	{
+        [Tooltip("The type of trigger event to detect.")]
 		public TriggerType trigger;
-		[UIHint(UIHint.Tag)]
+		
+        [UIHint(UIHint.Tag)]
+        [Tooltip("Filter by Tag.")]
 		public FsmString collideTag;
+
+        [Tooltip("Event to send if the trigger event is detected.")]
 		public FsmEvent sendEvent;
-		[UIHint(UIHint.Variable)]
+		
+        [UIHint(UIHint.Variable)]
+        [Tooltip("Store the GameObject that collided with the Owner of this FSM.")]
 		public FsmGameObject storeCollider;
 
 		public override void Reset()
@@ -24,7 +31,7 @@ namespace HutongGames.PlayMaker.Actions
 			storeCollider = null;
 		}
 
-		public override void Awake()
+		public override void OnPreprocess()
 		{
 			switch (trigger)
 			{

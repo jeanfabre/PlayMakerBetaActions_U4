@@ -11,8 +11,10 @@ namespace HutongGames.PlayMaker.Actions
 		[RequiredField]
 		[CheckForComponent(typeof(Renderer))]
 		public FsmOwnerDefault gameObject;
-		public FsmInt materialIndex;
-		[RequiredField]
+		
+        public FsmInt materialIndex;
+		
+        [RequiredField]
 		public FsmMaterial material;
 
 		public override void Reset()

@@ -42,6 +42,7 @@ namespace HutongGames.PlayMaker.Actions
 			toFloats[3] = toValue.Value.a;
 			resultFloats = new float[4];
 			finishInNextStep = false;
+		    colorVariable.Value = fromValue.Value;
 		}
 		
 		public override void OnExit (){

@@ -12,8 +12,8 @@ namespace HutongGames.PlayMaker.Actions
 		{}
 
 		public override void OnEnter()
-		{
-#if (UNITY_IPHONE || UNITY_ANDROID)			
+        {
+#if (UNITY_IPHONE || UNITY_IOS || UNITY_ANDROID)			
 			Handheld.Vibrate();
 #endif
             Finish();

@@ -7,7 +7,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Animation)]
 	[Tooltip("Plays an Animation on a Game Object. You can add named animation clips to the object in the Unity editor, or with the Add Animation Clip action.")]
-	public class PlayAnimation : ComponentAction<Animation>
+	public class PlayAnimation : BaseAnimationAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animation))]
@@ -53,7 +53,7 @@ namespace HutongGames.PlayMaker.Actions
 			DoPlayAnimation();
 		}
 
-		void DoPlayAnimation()
+	    private void DoPlayAnimation()
 		{
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
 			if (!UpdateCache(go))
@@ -119,7 +119,7 @@ namespace HutongGames.PlayMaker.Actions
 			}
 		}
 
-		void StopAnimation()
+	    private void StopAnimation()
 		{
 			if (animation != null)
 			{

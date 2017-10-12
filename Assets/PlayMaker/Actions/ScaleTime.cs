@@ -1,4 +1,4 @@
-// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
+﻿// (c) Copyright HutongGames, LLC 2010-2013. All rights reserved.
 
 using UnityEngine;
 
@@ -44,8 +44,11 @@ namespace HutongGames.PlayMaker.Actions
 		{
 			Time.timeScale = timeScale.Value;
 			
-			//TODO: how to get the user set default value?
-			Time.fixedDeltaTime = 0.02f * Time.timeScale;
+			if (adjustFixedDeltaTime.Value)
+			{
+				//TODO: how to get the user set default value?
+				Time.fixedDeltaTime = 0.02f * Time.timeScale;
+			}
 		}
 	}
 }

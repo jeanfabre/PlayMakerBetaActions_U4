@@ -18,17 +18,24 @@ namespace HutongGames.PlayMaker.Actions
 		[UIHint(UIHint.Variable)]
 		[Tooltip("Store the button state in a Bool Variable.")]
         public FsmBool storeResult;
+
+        [Tooltip("Uncheck to run when entering the state.")]
+	    public bool inUpdateOnly;
 		
 		public override void Reset()
 		{
 			button = MouseButton.Left;
 			sendEvent = null;
 			storeResult = null;
+		    inUpdateOnly = true;
 		}
 
         public override void OnEnter()
         {
-            DoGetMouseButtonDown();
+            if (!inUpdateOnly)
+            {
+                DoGetMouseButtonDown();
+            }
         }
 
         public override void OnUpdate()

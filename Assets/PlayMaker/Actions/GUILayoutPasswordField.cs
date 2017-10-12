@@ -8,10 +8,19 @@ namespace HutongGames.PlayMaker.Actions
 	public class GUILayoutPasswordField : GUILayoutAction {
 
 		[UIHint(UIHint.Variable)]
+		[Tooltip("The password Text")]
 		public FsmString text;
+
+		[Tooltip("The Maximum Length of the field")]
 		public FsmInt maxLength;
+
+		[Tooltip("The Style of the Field")]
 		public FsmString style;
+
+		[Tooltip("Event sent when field content changed")]
 		public FsmEvent changedEvent;
+
+		[Tooltip("Replacement character to hide the password")]
 		public FsmString mask;
 
 		public override void Reset()

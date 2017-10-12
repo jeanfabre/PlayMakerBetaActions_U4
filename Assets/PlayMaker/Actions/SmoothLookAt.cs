@@ -54,6 +54,11 @@ namespace HutongGames.PlayMaker.Actions
 			finishEvent = null;
 		}
 
+        public override void OnPreprocess()
+        {
+            Fsm.HandleLateUpdate = true;
+        }
+
 		public override void OnEnter()
 		{
 			previousGo = null;

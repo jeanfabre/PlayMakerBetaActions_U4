@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Animation)]
 	[Tooltip("Sets the Blend Weight of an Animation. Check Every Frame to update the weight continuosly, e.g., if you're manipulating a variable that controls the weight.")]
-	public class SetAnimationWeight : ComponentAction<Animation>
+	public class SetAnimationWeight : BaseAnimationAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animation))]
@@ -40,7 +40,7 @@ namespace HutongGames.PlayMaker.Actions
 			DoSetAnimationWeight(gameObject.OwnerOption == OwnerDefaultOption.UseOwner ? Owner : gameObject.GameObject.Value);
 		}
 
-		void DoSetAnimationWeight(GameObject go)
+	    private void DoSetAnimationWeight(GameObject go)
 		{
 		    if (!UpdateCache(go))
 		    {

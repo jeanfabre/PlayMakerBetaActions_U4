@@ -6,7 +6,7 @@ namespace HutongGames.PlayMaker.Actions
 {
 	[ActionCategory(ActionCategory.Animation)]
 	[Tooltip("Play an animation on a subset of the hierarchy. E.g., A waving animation on the upper body.")]
-	public class AddMixingTransform : FsmStateAction
+	public class AddMixingTransform : BaseAnimationAction
 	{
 		[RequiredField]
 		[CheckForComponent(typeof(Animation))]
@@ -42,16 +42,10 @@ namespace HutongGames.PlayMaker.Actions
 		void DoAddMixingTransform()
 		{
 			var go = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (go == null)
+			if (!UpdateCache(go))
 			{
 				return;
 			}
-
-            var animation = go.GetComponent<Animation>();
-            if (animation == null)
-            {
-                return;
-            }
 
 			var animClip = animation[animationName.Value];
 			if (animClip == null)
