@@ -1,0 +1,97 @@
+<root>
+  <Unity>
+    <Version>4.7.2f1</Version>
+    <HasPro>true</HasPro>
+  </Unity>
+  <PlayMaker>
+    <Version>1.8.5.f8</Version>
+    <Preferences>
+      <Colors>
+        <Color>
+          <Index>0</Index>
+          <Name>Default</Name>
+          <Value>RGBA(0.500, 0.500, 0.500, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>1</Index>
+          <Name>Blue</Name>
+          <Value>RGBA(0.545, 0.671, 0.941, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>2</Index>
+          <Name>Cyan</Name>
+          <Value>RGBA(0.243, 0.761, 0.690, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>3</Index>
+          <Name>Green</Name>
+          <Value>RGBA(0.431, 0.761, 0.243, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>4</Index>
+          <Name>Yellow</Name>
+          <Value>RGBA(1.000, 0.875, 0.188, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>5</Index>
+          <Name>Orange</Name>
+          <Value>RGBA(1.000, 0.553, 0.188, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>6</Index>
+          <Name>Red</Name>
+          <Value>RGBA(0.761, 0.243, 0.251, 1.000)</Value>
+        </Color>
+        <Color>
+          <Index>7</Index>
+          <Name>Purple</Name>
+          <Value>RGBA(0.545, 0.243, 0.761, 1.000)</Value>
+        </Color>
+      </Colors>
+      <DimFinishedActions>false</DimFinishedActions>
+      <MouseWheelScrollsGraphView>true</MouseWheelScrollsGraphView>
+      <ShowHints>false</ShowHints>
+      <DisableToolWindowsWhenPlaying>false</DisableToolWindowsWhenPlaying>
+      <SnapToGrid>true</SnapToGrid>
+      <ShowStateLabelsInGameView>false</ShowStateLabelsInGameView>
+      <DrawPlaymakerGizmos>false</DrawPlaymakerGizmos>
+      <DebugActionParameters>true</DebugActionParameters>
+      <AutoAddPlayMakerGUI>false</AutoAddPlayMakerGUI>
+    </Preferences>
+    <GlobalVariables>
+    </GlobalVariables>
+    <GlobalEvents>
+    </GlobalEvents>
+  </PlayMaker>
+  <Project>
+    <Platform>OSXEditor</Platform>
+    <InternetReachability>ReachableViaLocalAreaNetwork</InternetReachability>
+    <LoadedLevelName>test</LoadedLevelName>
+    <TargetFrameRate>-1</TargetFrameRate>
+  </Project>
+  <Scenes>
+    <Scene>
+      <path>Assets/test.unity</path>
+      <Fsm>
+        <Component>
+          <Path>/Main Camera</Path>
+          <GameObjectName>Main Camera</GameObjectName>
+          <Name>FSM</Name>
+          <DataVersion>2</DataVersion>
+        </Component>
+        <StartState>State 1</StartState>
+        <States>
+          <State>
+            <Name>State 1</Name>
+            <IsStartState>true</IsStartState>
+            <Position>(x:50.00, y:100.00, width:100.00, height:16.00)</Position>
+          </State>
+        </States>
+        <Variables>
+        </Variables>
+      </Fsm>
+    </Scene>
+  </Scenes>
+  <Events>
+  </Events>
+</root>
