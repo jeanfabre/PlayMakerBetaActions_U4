@@ -1,2 +1,2 @@
 Hi Jean,
-Can you accept or deny this (to test fork)
+Can you accept this (to test fork) and remove later on
